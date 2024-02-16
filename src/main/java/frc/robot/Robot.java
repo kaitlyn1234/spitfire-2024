@@ -36,12 +36,12 @@ private static final String kDefaultAuto = "Default";
 private static final String kCustomAuto = "My Auto";
 private String m_autoSelected;
 private final SendableChooser<String> m_chooser = new SendableChooser <>();
+/* 
+ SlewRateLimiter lift_rate_limiter = new SlewRateLimiter(Math.PI / 2.0); // 90 deg per second
+ SlewRateLimiter wrist_rate_limiter = new SlewRateLimiter(Math.PI / 2.0); // 90 deg per second
 
-  SlewRateLimiter lift_rate_limiter = new SlewRateLimiter(Math.PI / 2.0); // 90 deg per second
-  SlewRateLimiter wrist_rate_limiter = new SlewRateLimiter(Math.PI / 2.0); // 90 deg per second
-
-  PIDController lift_pos_pid = new PIDController(0.25, 0.0, 0.0);
-  PIDController wrist_pos_pid = new PIDController(0.1, 0.0, 0.0);
+ PIDController lift_pos_pid = new PIDController(0.25, 0.0, 0.0);
+ PIDController wrist_pos_pid = new PIDController(0.1, 0.0, 0.0);
 
   double lift_setpoint_lower_limit = 0.3;
   double lift_setpoint_upper_limit = 5.6;
@@ -53,7 +53,7 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
 
   public double wrist_setpoint = 0;
   public double lift_setpoint = 0;
-
+*/
 
   public Timer autonomy_timer = new Timer();
 
@@ -74,7 +74,7 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
 
     homeSetpoints();
   }
-
+/* 
   public void homeSetpoints() {
     lift_setpoint = getLiftFeedback();
     wrist_setpoint = getWristFeedback();
@@ -176,7 +176,7 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
         wrist_setpoint = wrist_setpoint + stick_y * wrist_joystick_speed;
       }
     }
-  }
+  }*/
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -255,17 +255,17 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    homeSetpoints();
+   // homeSetpoints();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
 
-    arbitrateSetpoints();
+    /*arbitrateSetpoints();
     clampSetpoints();
     controlWrist();
-    controlLift();
+    controlLift();*/
 
     //INTAKE
     if (stick.getRawButton(5)) {
