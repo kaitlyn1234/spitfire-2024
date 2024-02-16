@@ -53,15 +53,15 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
     // SPARK MAX DRIVE TRAIN CAN IDs
-    public static final int kFrontLeftDrivingCanId = 6;
-    public static final int kRearLeftDrivingCanId = 8;
-    public static final int kFrontRightDrivingCanId = 4;
-    public static final int kRearRightDrivingCanId = 1;
+    public static final int kFrontLeftDrivingCanId = 6; //6 for spitfire 2 
+    public static final int kRearLeftDrivingCanId = 8;// 8 for spitfire 4
+    public static final int kFrontRightDrivingCanId = 4; //4 for spitfire 8
+    public static final int kRearRightDrivingCanId = 1; //1 for spitfire 6
 
-    public static final int kFrontLeftTurningCanId = 5;
-    public static final int kRearLeftTurningCanId = 7;
-    public static final int kFrontRightTurningCanId = 3;
-    public static final int kRearRightTurningCanId = 2;
+    public static final int kFrontLeftTurningCanId = 5; //5 for spitfire 1
+    public static final int kRearLeftTurningCanId = 7; //7 for spitfire 3
+    public static final int kFrontRightTurningCanId = 3; //3 for spitfire 7
+    public static final int kRearRightTurningCanId = 2; //2 for spitfire 5
     public static final boolean kGyroReversed = false;
 
     //MECHANISM CAN IDs
@@ -131,7 +131,7 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxSpeedMetersPerSecond = 0.5;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;

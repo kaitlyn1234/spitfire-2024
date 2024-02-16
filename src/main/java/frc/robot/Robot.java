@@ -210,18 +210,14 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    autonomy_timer.reset();
-    autonomy_timer.start();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    //test this for trajectory
-  /*
+    /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
      * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
      * = new MyAutoCommand(); break; case "Default Auto": default:
      * autonomousCommand = new ExampleCommand(); break; }
      */
-    
-    homeSetpoints();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -232,7 +228,7 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    wrist_setpoint = 1.75;
+    /*wrist_setpoint = 1.75;
     lift_setpoint = 2.28;
 
     if (autonomy_timer.hasElapsed(10)) {
@@ -247,6 +243,7 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     clampSetpoints();
     controlWrist();
     controlLift();
+    */
   }
 
   @Override

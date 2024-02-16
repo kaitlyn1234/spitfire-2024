@@ -60,7 +60,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)),
+      Rotation2d.fromDegrees(-ahrs.getAngle() + 180),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -76,7 +76,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // Update the odometry in the periodic block
     m_odometry.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)),
+        Rotation2d.fromDegrees(-ahrs.getAngle() + 180),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -101,7 +101,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     m_odometry.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)),
+        Rotation2d.fromDegrees(-ahrs.getAngle() + 180),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -245,6 +245,6 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
-    return m_gyro.getRate(IMUAxis.kZ) * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+    return ahrs.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
 }
