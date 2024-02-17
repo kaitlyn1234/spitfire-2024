@@ -25,13 +25,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
  * project.
  */
 public class Robot extends TimedRobot {
-  CANSparkMax rightliftmotor = new CANSparkMax(9, MotorType.kBrushless);; // Encoder 0 = level, down is +, up is - (incrementing clockwise when looking at right side)
-  CANSparkMax leftliftmotor = new CANSparkMax(12, MotorType.kBrushless);;
-  CANSparkMax wrist = new CANSparkMax(11, MotorType.kBrushless);; // Encoder, 0 = straight, down is +, up is - (incrementing clockwise when looking at right side)
-  CANSparkMax leftintake= new CANSparkMax(10, MotorType.kBrushless);;
-  CANSparkMax rightintake= new CANSparkMax(14, MotorType.kBrushless);;
   Joystick stick = new Joystick(2);
   
+  CANSparkMax shooterPivot = new CANSparkMax(9, MotorType.kBrushless);
+  CANSparkMax intakePivot = new CANSparkMax(10, MotorType.kBrushless);
+  CANSparkMax intakeAxles = new CANSparkMax(11, MotorType.kBrushless);
+  CANSparkMax leftShooterBelt = new CANSparkMax(12, MotorType.kBrushless);
+  CANSparkMax rightShooterBelt = new CANSparkMax(13, MotorType.kBrushless);
+  CANSparkMax rightShooterWheel = new CANSparkMax(14, MotorType.kBrushless);
+  CANSparkMax leftShooterWheel = new CANSparkMax(15, MotorType.kBrushless);
+
 private static final String kDefaultAuto = "Default";
 private static final String kCustomAuto = "My Auto";
 private String m_autoSelected;
@@ -72,7 +75,7 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-    homeSetpoints();
+   // homeSetpoints();
   }
 /* 
   public void homeSetpoints() {
@@ -193,11 +196,11 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     
-    SmartDashboard.putNumber("lift encoder", getLiftAngle());
+    /*SmartDashboard.putNumber("lift encoder", getLiftAngle());
     SmartDashboard.putNumber("wrist encoder", getWristAngle());
 
     SmartDashboard.putNumber("lift feedback", getLiftFeedback());
-    SmartDashboard.putNumber("wrist feedback", getWristFeedback());
+    SmartDashboard.putNumber("wrist feedback", getWristFeedback());*/
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -267,21 +270,86 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     controlWrist();
     controlLift();*/
 
-    //INTAKE
-    if (stick.getRawButton(5)) {
-      //in
-      rightintake.set(0.45);
-      leftintake.set(0.45);
+
+    //SHOOTER BELTS
+    if (stick.getRawButton(1)) {
+      //belt OUT
+      rightShooterBelt.set(0.11);
+      leftShooterBelt.set(-0.11);
     }
-    else if (stick.getRawButton(6)) {
-      //out
-      rightintake.set(-0.3);
-      leftintake.set(-0.3);
+    else if (stick.getRawButton(2)) {
+      //blet IN 
+      rightShooterBelt.set(-0.11);
+      leftShooterBelt.set(0.11);
     }
     else {
-      rightintake.set(0);
-      leftintake.set(0);
+      rightShooterBelt.set(0);
+      leftShooterBelt.set(0);
     }
+
+
+    //SHOOTER WHEELS
+    if (stick.getRawButton(3)) {
+      //shooter IN
+      rightShooterWheel.set(0.11);
+      leftShooterWheel.set(-0.11);
+    }
+      else if (stick.getRawButton(4)) {
+      //SHOOTER out
+      rightShooterWheel.set(-0.11);
+      leftShooterWheel.set(0.11);
+    }
+    else {
+      rightShooterWheel.set(0);
+      leftShooterWheel.set(0);
+    }
+
+
+     //SHOOTER PIVOT
+    if (stick.getRawButton(5)) {
+      //PIVOT OUT
+      shooterPivot.set(0.11);
+    }
+    else if (stick.getRawButton(6)) {
+      //PIVOT IN 
+      shooterPivot.set(-0.11);
+    }
+    else {
+      //STOP
+      shooterPivot.set(0);
+    }
+    
+     /*  //INTAKE PIVOT
+    if (stick.getRawButton(7)) {
+      //PIVOT OUT
+      intakePivot.set(0.11);
+    }
+    else if (stick.getRawButton(8)) {
+      //PIVOT IN 
+      intakePivot.set(-0.11);
+    }
+    else {
+      //STOP
+      intakePivot.set(0);
+    }*/
+
+        //INTAKE AXLE
+    if (stick.getRawButton(9)) {
+      //NOTE OUT
+      intakeAxles.set(0.11);
+      intakePivot.set(0.11);
+    }
+    else if (stick.getRawButton(10)) {
+      //NOTE IN 
+      intakeAxles.set(-0.11);
+      intakePivot.set(-0.11);
+    }
+    else {
+      //STOP
+      intakeAxles.set(0);
+      intakePivot.set(0);
+    }
+    
   }
 
   @Override

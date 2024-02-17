@@ -53,23 +53,26 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
     // SPARK MAX DRIVE TRAIN CAN IDs
-    public static final int kFrontLeftDrivingCanId = 2; //6 for spitfire 2 CHANGE 2
-    public static final int kRearLeftDrivingCanId = 8;// 8 for spitfire 4
-    public static final int kFrontRightDrivingCanId = 4; //4 for spitfire 8
-    public static final int kRearRightDrivingCanId = 1; //1 for spitfire 6
+    public static final int kFrontLeftDrivingCanId = 2; //6 for spitfire 2 
+    public static final int kRearLeftDrivingCanId = 4;// 8 for spitfire 4
+    public static final int kFrontRightDrivingCanId = 8; //4 for spitfire 8
+    public static final int kRearRightDrivingCanId = 6; //1 for spitfire 6
 
-    public static final int kFrontLeftTurningCanId = 5; //5 for spitfire 1
-    public static final int kRearLeftTurningCanId = 7; //7 for spitfire 3
-    public static final int kFrontRightTurningCanId = 3; //3 for spitfire 7
-    public static final int kRearRightTurningCanId = 2; //2 for spitfire 5
+    public static final int kFrontLeftTurningCanId = 1; //5 for spitfire 1
+    public static final int kRearLeftTurningCanId = 3; //7 for spitfire 3
+    public static final int kFrontRightTurningCanId = 7; //3 for spitfire 7
+    public static final int kRearRightTurningCanId = 5; //2 for spitfire 5
     public static final boolean kGyroReversed = false;
 
     //MECHANISM CAN IDs
-    public static final int rightliftmotor = 9;
-    public static final int leftliftmotor = 12;
-    public static final int wrist = 11;
-    public static final int leftintake = 10;
-    public static final int rightintake = 14;
+    public static final int shooterPivot = 9;
+    public static final int intakePivot = 10;
+    public static final int intakeAxles= 11;
+    public static final int leftShooterBelt = 12;
+    public static final int rightShooterBelt = 13;
+    public static final int rightShooterWheel = 14;
+    public static final int leftShooterWheel = 15;
+
 
     public final Joystick m_stick = new Joystick(3);
   }
