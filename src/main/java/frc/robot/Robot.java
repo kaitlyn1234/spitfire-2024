@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
   Joystick stick = new Joystick(2);
   
   CANSparkMax shooterPivot = new CANSparkMax(9, MotorType.kBrushless);
-  CANSparkMax intakePivot = new CANSparkMax(10, MotorType.kBrushless);
+  CANSparkMax intakePivot = new CANSparkMax(10, MotorType.kBrushed);
   CANSparkMax intakeAxles = new CANSparkMax(11, MotorType.kBrushless);
   CANSparkMax leftShooterBelt = new CANSparkMax(12, MotorType.kBrushless);
   CANSparkMax rightShooterBelt = new CANSparkMax(13, MotorType.kBrushless);
@@ -319,35 +319,33 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
       shooterPivot.set(0);
     }
     
-     /*  //INTAKE PIVOT
+     //INTAKE PIVOT
     if (stick.getRawButton(7)) {
       //PIVOT OUT
-      intakePivot.set(0.11);
+      intakePivot.set(0.05);
     }
     else if (stick.getRawButton(8)) {
       //PIVOT IN 
-      intakePivot.set(-0.11);
+      intakePivot.set(-0.05);
     }
     else {
       //STOP
       intakePivot.set(0);
-    }*/
+    }
 
         //INTAKE AXLE
     if (stick.getRawButton(9)) {
       //NOTE OUT
       intakeAxles.set(0.11);
-      intakePivot.set(0.11);
     }
     else if (stick.getRawButton(10)) {
       //NOTE IN 
       intakeAxles.set(-0.11);
-      intakePivot.set(-0.11);
     }
     else {
       //STOP
       intakeAxles.set(0);
-      intakePivot.set(0);
+
     }
     
   }
