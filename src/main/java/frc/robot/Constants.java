@@ -66,7 +66,7 @@ public final class Constants {
 
     //MECHANISM CAN IDs
     public static final int shooterPivot = 9;
-    public static final int intakePivot = 10;
+    public static final int intakePivot = 18;
     public static final int intakeAxles= 11;
     public static final int leftShooterBelt = 12;
     public static final int rightShooterBelt = 13;

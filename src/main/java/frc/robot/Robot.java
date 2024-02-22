@@ -28,12 +28,14 @@ public class Robot extends TimedRobot {
   Joystick stick = new Joystick(2);
   
   CANSparkMax shooterPivot = new CANSparkMax(9, MotorType.kBrushless);
-  CANSparkMax intakePivot = new CANSparkMax(10, MotorType.kBrushed);
+  CANSparkMax intakePivot = new CANSparkMax(18, MotorType.kBrushless);
   CANSparkMax intakeAxles = new CANSparkMax(11, MotorType.kBrushless);
   CANSparkMax leftShooterBelt = new CANSparkMax(12, MotorType.kBrushless);
   CANSparkMax rightShooterBelt = new CANSparkMax(13, MotorType.kBrushless);
   CANSparkMax rightShooterWheel = new CANSparkMax(14, MotorType.kBrushless);
   CANSparkMax leftShooterWheel = new CANSparkMax(15, MotorType.kBrushless);
+  CANSparkMax liftyLeft = new CANSparkMax(17, MotorType.kBrushless);
+  CANSparkMax liftyRight = new CANSparkMax(16, MotorType.kBrushless);
 
 private static final String kDefaultAuto = "Default";
 private static final String kCustomAuto = "My Auto";
@@ -336,11 +338,11 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
         //INTAKE AXLE
     if (stick.getRawButton(9)) {
       //NOTE OUT
-      intakeAxles.set(0.11);
+      intakeAxles.set(1);
     }
     else if (stick.getRawButton(10)) {
       //NOTE IN 
-      intakeAxles.set(-0.11);
+      intakeAxles.set(-1);
     }
     else {
       //STOP
@@ -348,6 +350,21 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
 
     }
     
+      if (stick.getTrigger(2)) {
+      //Climbers up
+      liftyLeft.set(0.2);
+      liftyRight.set(0.2);
+    }
+    else if (stick.getTrigger(3)) {
+      //Climbers down
+      liftyLeft.set(0.2);
+      liftyRight.set(-0.2);
+    }
+    else {
+      //STOP
+      liftyLeft.set(0);
+      liftyRight.set(0);
+    }
   }
 
   @Override
