@@ -72,6 +72,8 @@ public final class Constants {
     public static final int rightShooterBelt = 13;
     public static final int rightShooterWheel = 14;
     public static final int leftShooterWheel = 15;
+    public static final int liftyLeft = 17;
+    public static final int liftyRight = 16;
 
 
     public final Joystick m_stick = new Joystick(3);

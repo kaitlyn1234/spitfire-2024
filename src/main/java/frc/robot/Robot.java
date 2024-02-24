@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.Joystick;
 import com.revrobotics.CANSparkMax;
+//import edu.wpi.first.wpilibj.Spark;
 import com.revrobotics.EncoderType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
@@ -41,13 +42,45 @@ private static final String kDefaultAuto = "Default";
 private static final String kCustomAuto = "My Auto";
 private String m_autoSelected;
 private final SendableChooser<String> m_chooser = new SendableChooser <>();
+
 /* 
+public class Blinkin {
+
+  Spark blinkin = new Spark(0);
+  Joystick driverController = new Joystick(0);
+  public Blinkin() {
+  }
+  
+  public void lightsCone() {
+    blinkin.set(0.69);
+  }
+  public void lightsCube() {
+    blinkin.set(0.91);
+  }
+  public void normalight() {
+    blinkin.set(0.57);
+  }
+
+  public void teleopPeriodic() {
+  if(driverController.getRawButton(6)){
+  lightsCone();
+  }
+  else if(driverController.getRawButton(4)){
+  lightsCube();
+  }
+  else{
+  normalight();
+  }
+  }}*/
+
+  
+
  SlewRateLimiter lift_rate_limiter = new SlewRateLimiter(Math.PI / 2.0); // 90 deg per second
  SlewRateLimiter wrist_rate_limiter = new SlewRateLimiter(Math.PI / 2.0); // 90 deg per second
 
- PIDController lift_pos_pid = new PIDController(0.25, 0.0, 0.0);
- PIDController wrist_pos_pid = new PIDController(0.1, 0.0, 0.0);
-
+ PIDController shooter_pos_pid = new PIDController(0.25, 0.0, 0.0);
+ PIDController intake_pos_pid = new PIDController(0.1, 0.0, 0.0);
+/* 
   double lift_setpoint_lower_limit = 0.3;
   double lift_setpoint_upper_limit = 5.6;
   double wrist_setpoint_lower_limit = 0.45;
@@ -59,6 +92,17 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
   public double wrist_setpoint = 0;
   public double lift_setpoint = 0;
 */
+
+/*
+  double intake_setpoint_lower_limit = 0;
+  double intake_setpoint_upper_limit = 0;
+
+  double shooter_setpoint_lower_limit = 0;
+  double shooter_setpoint_upper_limit = 0;
+
+  public double intake_setpoint = 0;
+  public double shooter_setpoint = 0;
+  */
 
   public Timer autonomy_timer = new Timer();
 
@@ -84,19 +128,19 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     lift_setpoint = getLiftFeedback();
     wrist_setpoint = getWristFeedback();
   }
-
+*/
   public double wrapAngle(double ang) {
     return Math.atan2(Math.sin(ang), Math.cos(ang));
   }
 
-  public double getWristAngle() {
-      return wrapAngle(-wrist.getAbsoluteEncoder(Type.kDutyCycle).getPosition() * Math.PI * 2);
+  public double getShooterAngle() {
+      return wrapAngle(-shooterPivot.getAbsoluteEncoder(Type.kDutyCycle).getPosition() * Math.PI * 2);
   }
 
-  public double getLiftAngle() {
-    return wrapAngle(-rightliftmotor.getAbsoluteEncoder(Type.kDutyCycle).getPosition() * Math.PI * 2 - Math.PI / 2.0);
+  public double getIntakeAngle() {
+    return wrapAngle(-intakePivot.getAbsoluteEncoder(Type.kDutyCycle).getPosition() * Math.PI * 2 - Math.PI / 2.0);
   }
-
+/* 
   public double getLiftFeedback() {
     // Offset so horizontal angle is 90 deg
     return getLiftAngle() + Math.PI;
@@ -198,9 +242,9 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     
-    /*SmartDashboard.putNumber("lift encoder", getLiftAngle());
-    SmartDashboard.putNumber("wrist encoder", getWristAngle());
-
+    SmartDashboard.putNumber("shooter encoder", getShooterAngle());
+    SmartDashboard.putNumber("intake encoder", getIntakeAngle());
+/* 
     SmartDashboard.putNumber("lift feedback", getLiftFeedback());
     SmartDashboard.putNumber("wrist feedback", getWristFeedback());*/
   }
@@ -273,7 +317,7 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     controlLift();*/
 
 
-    //SHOOTER BELTS
+    /*//SHOOTER BELTS
     if (stick.getRawButton(1)) {
       //belt OUT
       rightShooterBelt.set(0.11);
@@ -287,7 +331,7 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
     else {
       rightShooterBelt.set(0);
       leftShooterBelt.set(0);
-    }
+    }*/
 
 
     //SHOOTER WHEELS
@@ -324,11 +368,11 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
      //INTAKE PIVOT
     if (stick.getRawButton(7)) {
       //PIVOT OUT
-      intakePivot.set(0.05);
+      intakePivot.set(0.20);
     }
     else if (stick.getRawButton(8)) {
       //PIVOT IN 
-      intakePivot.set(-0.05);
+      intakePivot.set(-0.20);
     }
     else {
       //STOP
@@ -350,12 +394,20 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
 
     }
     
-      if (stick.getTrigger(2)) {
+
+
+
+
+     /*  double stick_x = stick.getRawAxis(4);
+      double stick_y = stick.getRawAxis(3);
+
+      if (Math.abs(stick_x) > 0.1) {
       //Climbers up
       liftyLeft.set(0.2);
       liftyRight.set(0.2);
     }
-    else if (stick.getTrigger(3)) {
+    else if (Math.abs(stick_y) > 0.1)  {
+
       //Climbers down
       liftyLeft.set(0.2);
       liftyRight.set(-0.2);
@@ -364,7 +416,21 @@ private final SendableChooser<String> m_chooser = new SendableChooser <>();
       //STOP
       liftyLeft.set(0);
       liftyRight.set(0);
+    }*/
+    if (stick.getRawButton(1)) {
+      //CLIMBERS DOWN
+      liftyLeft.set(-0.2);
+      liftyRight.set(0.2);
     }
+    else if (stick.getRawButton(2)) {
+      //CLIMBERS UP
+      liftyLeft.set(0.2);
+      liftyRight.set(-0.2);
+    }
+    else {
+      liftyLeft.set(0);
+      liftyRight.set(0);}
+
   }
 
   @Override
