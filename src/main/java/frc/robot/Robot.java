@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import com.revrobotics.CANSparkMax;
 //import edu.wpi.first.wpilibj.Spark;
 import com.revrobotics.EncoderType;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import edu.wpi.first.math.controller.PIDController;
@@ -38,11 +39,16 @@ public class Robot extends TimedRobot {
   CANSparkMax liftyLeft = new CANSparkMax(17, MotorType.kBrushless);
   CANSparkMax liftyRight = new CANSparkMax(16, MotorType.kBrushless);
 
-private static final String kDefaultAuto = "Default";
-private static final String kCustomAuto = "My Auto";
-private String m_autoSelected;
-private final SendableChooser<String> m_chooser = new SendableChooser <>();
+  private static final String kDefaultAuto = "Default";
+  private static final String kCustomAuto = "My Auto";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser <>();
 
+  double shooter_joystick_speed = 0.01;
+  double intake_joystick_speed =  0.01;
+  enum SystemState { UserControl, Handoff1, Handoff2, Handoff3 };
+
+  SystemState system_state = SystemState.UserControl;
 /* 
 public class Blinkin {
 
@@ -75,34 +81,23 @@ public class Blinkin {
 
   
 
- SlewRateLimiter lift_rate_limiter = new SlewRateLimiter(Math.PI / 2.0); // 90 deg per second
- SlewRateLimiter wrist_rate_limiter = new SlewRateLimiter(Math.PI / 2.0); // 90 deg per second
+ SlewRateLimiter shooter_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
+ SlewRateLimiter intake_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
 
- PIDController shooter_pos_pid = new PIDController(0.25, 0.0, 0.0);
- PIDController intake_pos_pid = new PIDController(0.1, 0.0, 0.0);
-/* 
-  double lift_setpoint_lower_limit = 0.3;
-  double lift_setpoint_upper_limit = 5.6;
-  double wrist_setpoint_lower_limit = 0.45;
-  double wrist_setpoint_upper_limit = 5.45;
+ PIDController shooter_pos_pid = new PIDController(2.5, 0.0, 0.0);
+ PIDController intake_pos_pid = new PIDController(2.5, 0.0, 0.0);
 
-  double wrist_joystick_speed = 0.015;
-  double lift_joystick_speed = 0.01;
 
-  public double wrist_setpoint = 0;
-  public double lift_setpoint = 0;
-*/
 
-/*
-  double intake_setpoint_lower_limit = 0;
-  double intake_setpoint_upper_limit = 0;
+  double intake_setpoint_lower_limit = 0.479;
+  double intake_setpoint_upper_limit = 0.948;
 
-  double shooter_setpoint_lower_limit = 0;
-  double shooter_setpoint_upper_limit = 0;
+  double shooter_setpoint_lower_limit = 0.487;
+  double shooter_setpoint_upper_limit = 0.99;
 
   public double intake_setpoint = 0;
   public double shooter_setpoint = 0;
-  */
+  
 
   public Timer autonomy_timer = new Timer();
 
@@ -121,119 +116,100 @@ public class Blinkin {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-   // homeSetpoints();
+   homeSetpoints();
   }
-/* 
+
   public void homeSetpoints() {
-    lift_setpoint = getLiftFeedback();
-    wrist_setpoint = getWristFeedback();
+    shooter_setpoint = getShooterFeedback();
+    intake_setpoint = getIntakeFeedback();
   }
-*/
+
   public double wrapAngle(double ang) {
     return Math.atan2(Math.sin(ang), Math.cos(ang));
   }
 
   public double getShooterAngle() {
-      return wrapAngle(-shooterPivot.getAbsoluteEncoder(Type.kDutyCycle).getPosition() * Math.PI * 2);
+      double pos = shooterPivot.getAbsoluteEncoder(Type.kDutyCycle).getPosition();
+      if (pos < 0.01) {
+        pos = 1;
+      }
+      return pos;
   }
 
   public double getIntakeAngle() {
-    return wrapAngle(-intakePivot.getAbsoluteEncoder(Type.kDutyCycle).getPosition() * Math.PI * 2 - Math.PI / 2.0);
-  }
-/* 
-  public double getLiftFeedback() {
-    // Offset so horizontal angle is 90 deg
-    return getLiftAngle() + Math.PI;
+    return intakePivot.getAbsoluteEncoder(Type.kDutyCycle).getPosition();
   }
 
-  public double getWristFeedback() {
+  public double getShooterFeedback() {
+    // Offset so horizontal angle is 90 deg
+    return getShooterAngle();
+  }
+
+  public double getIntakeFeedback() {
     // Offset so the centered angle is pi
-    return getWristAngle() + Math.PI;
+    return getIntakeAngle();
   }
 
   public void clampSetpoints() {
-    if (lift_setpoint < lift_setpoint_lower_limit) { lift_setpoint = lift_setpoint_lower_limit; }
-    if (lift_setpoint > lift_setpoint_upper_limit) { lift_setpoint = lift_setpoint_upper_limit; }
+    if (shooter_setpoint < shooter_setpoint_lower_limit) { shooter_setpoint = shooter_setpoint_lower_limit; }
+    if (shooter_setpoint > shooter_setpoint_upper_limit) {shooter_setpoint = shooter_setpoint_upper_limit; }
 
-    if (wrist_setpoint < wrist_setpoint_lower_limit) { wrist_setpoint = wrist_setpoint_lower_limit; }
-    if (wrist_setpoint > wrist_setpoint_upper_limit) { wrist_setpoint = wrist_setpoint_upper_limit; }
+    if (intake_setpoint < intake_setpoint_lower_limit) { intake_setpoint = intake_setpoint_lower_limit; }
+    if (intake_setpoint > intake_setpoint_upper_limit) { intake_setpoint = intake_setpoint_upper_limit; }
   }
 
-  public void controlWrist() {
-    double rate_limited_setpoint = wrist_rate_limiter.calculate(wrist_setpoint);
-    double wrist_cmd = wrist_pos_pid.calculate(getWristFeedback(), rate_limited_setpoint);
-    wrist.set(-wrist_cmd);
+  public void controlIntake() {
+    double rate_limited_setpoint = intake_rate_limiter.calculate(intake_setpoint);
+    double intake_cmd = intake_pos_pid.calculate(getIntakeFeedback(), rate_limited_setpoint);
+    intakePivot.set(intake_cmd);
   }
 
-  public double getLiftFF() {
-    return 0.04 * Math.cos(getLiftFeedback());
+  public void controlShooter() {
+    double rate_limited_setpoint = shooter_rate_limiter.calculate(shooter_setpoint);
+    double shooter_cmd = shooter_pos_pid.calculate(getShooterFeedback(), rate_limited_setpoint);
+    shooterPivot.set(-shooter_cmd);
   }
 
-  public void controlLift() {
-    double rate_limited_setpoint = lift_rate_limiter.calculate(lift_setpoint);
-    double lift_fb = getLiftFeedback();
-    double lift_cmd = lift_pos_pid.calculate(lift_fb, rate_limited_setpoint);
-    lift_cmd = lift_cmd + getLiftFF();
-    rightliftmotor.set(-lift_cmd);
-    leftliftmotor.set(lift_cmd);
+  public boolean setpointsAchieved() {
+    double setpoint_tol = 0.05;
+    boolean intake_achieved = Math.abs(intake_setpoint - getIntakeAngle()) < setpoint_tol;
+
+    boolean shooter_achieved = false; // do the same thing for the shooter! (add the abs check)
+
+    return intake_achieved && shooter_achieved;
   }
 
   public void arbitrateSetpoints() {
-    if (stick.getRawButton(9)) {
-      wrist_setpoint = Math.PI; // Straight
-      lift_setpoint = Math.PI / 2; // Parallel to floor
-    }
-     
-    else if (stick.getRawButton(1)){
-      //cone scoring
-      wrist_setpoint = 1.75;
-      lift_setpoint = 2.28;
-    }
-
-    else if (stick.getRawButton(8)){
-      //home
-      wrist_setpoint = 0.525;
-      lift_setpoint = 5.568;
-    }
-
-    else if (stick.getRawButton(2)){
-      //cube scoring
-      wrist_setpoint = 3.564;
-      lift_setpoint = 1.828;
-    }
-
-    else if (stick.getRawButton(3)){
-      //cone human player
-      wrist_setpoint = 1.205;
-      lift_setpoint = 5.23;
-    }
-
-    else if (stick.getRawButton(4)){
-      //cube human player
-      wrist_setpoint = 3.019;
-      lift_setpoint = 4.961;
-    }
-   
-    else {
+   if (system_state == SystemState.UserControl) {
       double stick_x = stick.getRawAxis(1);
       double stick_y = stick.getRawAxis(5);
+
       if (Math.abs(stick_x) > 0.1) {
-        lift_setpoint = lift_setpoint + stick_x * lift_joystick_speed;
+        shooter_setpoint = shooter_setpoint + stick_x * shooter_joystick_speed;
       }
   
       if (Math.abs(stick_y) > 0.1) {
-        wrist_setpoint = wrist_setpoint + stick_y * wrist_joystick_speed;
+        intake_setpoint = intake_setpoint + stick_y * intake_joystick_speed;
       }
-    }
-  }*/
+      if (/* handoff button pressed */ false) {
+        system_state = SystemState.Handoff1;
+      }
+      if (/* shoot position button pressed */ false) {
+        system_state = SystemState.UserControl; // switch to shoot position state
+      }
+   }
+   else if (system_state == SystemState.Handoff1) {
+      shooter_setpoint = 0; // something not zero
+      intake_setpoint = 0; // something not zero
+      if (setpointsAchieved()) {
+          system_state = SystemState.Handoff2
+      }
+   }
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
+   // The final handoff state should return the system state to user control
+  }
+
+  
   @Override
   public void robotPeriodic() {
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
@@ -244,6 +220,8 @@ public class Blinkin {
     
     SmartDashboard.putNumber("shooter encoder", getShooterAngle());
     SmartDashboard.putNumber("intake encoder", getIntakeAngle());
+    SmartDashboard.putNumber("intake setpoint", intake_setpoint);
+    SmartDashboard.putNumber("shooter setpoint", shooter_setpoint);
 /* 
     SmartDashboard.putNumber("lift feedback", getLiftFeedback());
     SmartDashboard.putNumber("wrist feedback", getWristFeedback());*/
@@ -304,26 +282,26 @@ public class Blinkin {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-   // homeSetpoints();
+    homeSetpoints();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
 
-    /*arbitrateSetpoints();
+    arbitrateSetpoints();
     clampSetpoints();
-    controlWrist();
-    controlLift();*/
+    controlIntake();
+    controlShooter();
 
 
-    /*//SHOOTER BELTS
-    if (stick.getRawButton(1)) {
+    //SHOOTER BELTS
+    if (stick.getRawButton(7)) {
       //belt OUT
       rightShooterBelt.set(0.11);
       leftShooterBelt.set(-0.11);
     }
-    else if (stick.getRawButton(2)) {
+    else if (stick.getRawButton(8)) {
       //blet IN 
       rightShooterBelt.set(-0.11);
       leftShooterBelt.set(0.11);
@@ -331,7 +309,7 @@ public class Blinkin {
     else {
       rightShooterBelt.set(0);
       leftShooterBelt.set(0);
-    }*/
+    }
 
 
     //SHOOTER WHEELS
@@ -351,40 +329,13 @@ public class Blinkin {
     }
 
 
-     //SHOOTER PIVOT
-    if (stick.getRawButton(5)) {
-      //PIVOT OUT
-      shooterPivot.set(0.11);
-    }
-    else if (stick.getRawButton(6)) {
-      //PIVOT IN 
-      shooterPivot.set(-0.11);
-    }
-    else {
-      //STOP
-      shooterPivot.set(0);
-    }
-    
-     //INTAKE PIVOT
-    if (stick.getRawButton(7)) {
-      //PIVOT OUT
-      intakePivot.set(0.20);
-    }
-    else if (stick.getRawButton(8)) {
-      //PIVOT IN 
-      intakePivot.set(-0.20);
-    }
-    else {
-      //STOP
-      intakePivot.set(0);
-    }
 
         //INTAKE AXLE
-    if (stick.getRawButton(9)) {
+    if (stick.getRawButton(5)) {
       //NOTE OUT
       intakeAxles.set(1);
     }
-    else if (stick.getRawButton(10)) {
+    else if (stick.getRawButton(6)) {
       //NOTE IN 
       intakeAxles.set(-1);
     }
