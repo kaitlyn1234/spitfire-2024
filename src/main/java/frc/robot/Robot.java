@@ -202,7 +202,7 @@ public class Blinkin {
       shooter_setpoint = 0; // something not zero
       intake_setpoint = 0; // something not zero
       if (setpointsAchieved()) {
-          system_state = SystemState.Handoff2
+         // system_state = SystemState.Handoff2
       }
    }
 
@@ -298,13 +298,13 @@ public class Blinkin {
     //SHOOTER BELTS
     if (stick.getRawButton(7)) {
       //belt OUT
-      rightShooterBelt.set(0.11);
-      leftShooterBelt.set(-0.11);
+      rightShooterBelt.set(0.30);
+      leftShooterBelt.set(-0.30);
     }
     else if (stick.getRawButton(8)) {
       //blet IN 
-      rightShooterBelt.set(-0.11);
-      leftShooterBelt.set(0.11);
+      rightShooterBelt.set(-0.30);
+      leftShooterBelt.set(0.30);
     }
     else {
       rightShooterBelt.set(0);
@@ -315,13 +315,13 @@ public class Blinkin {
     //SHOOTER WHEELS
     if (stick.getRawButton(3)) {
       //shooter IN
-      rightShooterWheel.set(0.11);
-      leftShooterWheel.set(-0.11);
+      rightShooterWheel.set(0.60);
+      leftShooterWheel.set(-0.60);
     }
       else if (stick.getRawButton(4)) {
       //SHOOTER out
-      rightShooterWheel.set(-0.11);
-      leftShooterWheel.set(0.11);
+      rightShooterWheel.set(-0.60);
+      leftShooterWheel.set(0.60);
     }
     else {
       rightShooterWheel.set(0);
@@ -370,13 +370,13 @@ public class Blinkin {
     }*/
     if (stick.getRawButton(1)) {
       //CLIMBERS DOWN
-      liftyLeft.set(-0.2);
-      liftyRight.set(0.2);
+      liftyLeft.set(-0.50);
+      liftyRight.set(0.50);
     }
     else if (stick.getRawButton(2)) {
       //CLIMBERS UP
-      liftyLeft.set(0.2);
-      liftyRight.set(-0.2);
+      liftyLeft.set(0.50);
+      liftyRight.set(-0.50);
     }
     else {
       liftyLeft.set(0);
