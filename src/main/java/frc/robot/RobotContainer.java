@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  public final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -82,6 +82,8 @@ public class RobotContainer {
 
   public Command getAutonomousCommand()  {
     // Create config for trajectory
+
+    
    TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
@@ -89,14 +91,23 @@ public class RobotContainer {
         .setKinematics(DriveConstants.kDriveKinematics);
 
     // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+    Trajectory secondNoteTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(-1, 0), new Translation2d(1, 0)),
+        List.of(new Translation2d(1.5052, 0), new Translation2d(0, 0)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(2, 0, new Rotation2d(1.57)),
+        new Pose2d(0, 0, new Rotation2d(0)),
         config);
+
+      /*Trajectory thirdNoteTrajectory = TrajectoryGenerator.generateTrajectory(
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        List.of(new Translation2d(1.5052, 0), new Translation2d(0, -.76)),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(0, 0, new Rotation2d(1.57)),
+        config);*/
 
     var thetaController = new ProfiledPIDController(
         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);

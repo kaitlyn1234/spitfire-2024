@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.Joystick;
 import com.revrobotics.CANSparkMax;
 //import edu.wpi.first.wpilibj.Spark;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
@@ -97,6 +99,7 @@ public class Blinkin {
 
   public double intake_setpoint = 0;
   public double shooter_setpoint = 0;
+
   
 
   public Timer autonomy_timer = new Timer();
@@ -180,7 +183,7 @@ public class Blinkin {
   }
 
   public void arbitrateSetpoints() {
-   if (system_state == SystemState.UserControl) {
+  /*  if (system_state == SystemState.UserControl) {
       double stick_x = stick.getRawAxis(1);
       double stick_y = stick.getRawAxis(5);
 
@@ -191,23 +194,57 @@ public class Blinkin {
       if (Math.abs(stick_y) > 0.1) {
         intake_setpoint = intake_setpoint + stick_y * intake_joystick_speed;
       }
-      if (/* handoff button pressed */ false) {
-        system_state = SystemState.Handoff1;
+      if (// handoff button pressed  false) {
+       // system_state = SystemState.Handoff1;
       }
-      if (/* shoot position button pressed */ false) {
-        system_state = SystemState.UserControl; // switch to shoot position state
-      }
-   }
-   else if (system_state == SystemState.Handoff1) {
+      if (/* shoot position button pressed */ //false) {
+        //system_state = SystemState.UserControl; // switch to shoot position state
+     // }
+   //}
+  /*  else if (system_state == SystemState.Handoff1) {
       shooter_setpoint = 0; // something not zero
       intake_setpoint = 0; // something not zero
       if (setpointsAchieved()) {
          // system_state = SystemState.Handoff2
-      }
-   }
+      }*/
+   //}
+      double stick_x = stick.getRawAxis(1);
+      double stick_y = stick.getRawAxis(5);
+    
 
-   // The final handoff state should return the system state to user control
+
+
+      if (Math.abs(stick_x) > 0.1) {
+        shooter_setpoint = shooter_setpoint + stick_x * shooter_joystick_speed;
+      }
+  
+      if (Math.abs(stick_y) > 0.1) {
+        intake_setpoint = intake_setpoint + stick_y * intake_joystick_speed;
+      }
+
+
+    if (stick.getRawButton(3)) {
+      //amp
+      shooter_setpoint = 0.6624;
+    }
+     
+    else if (stick.getRawButton(4)){
+      //speaker scoring/ handoff
+      intake_setpoint = 0.481;
+      shooter_setpoint = 0.898;
+    
+    }
+
+    else if (stick.getRawButton(1)){
+      //intaking
+      intake_setpoint = 0.924;
+    
+    
+    }
+   
   }
+   // The final handoff state should return the system state to user control
+  
 
   
   @Override
@@ -222,9 +259,7 @@ public class Blinkin {
     SmartDashboard.putNumber("intake encoder", getIntakeAngle());
     SmartDashboard.putNumber("intake setpoint", intake_setpoint);
     SmartDashboard.putNumber("shooter setpoint", shooter_setpoint);
-/* 
-    SmartDashboard.putNumber("lift feedback", getLiftFeedback());
-    SmartDashboard.putNumber("wrist feedback", getWristFeedback());*/
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -295,35 +330,25 @@ public class Blinkin {
     controlShooter();
 
 
-    //SHOOTER BELTS
-    if (stick.getRawButton(7)) {
-      //belt OUT
-      rightShooterBelt.set(0.30);
-      leftShooterBelt.set(-0.30);
-    }
-    else if (stick.getRawButton(8)) {
-      //blet IN 
-      rightShooterBelt.set(-0.30);
-      leftShooterBelt.set(0.30);
-    }
-    else {
-      rightShooterBelt.set(0);
-      leftShooterBelt.set(0);
-    }
-
-
     //SHOOTER WHEELS
-    if (stick.getRawButton(3)) {
-      //shooter IN
-      rightShooterWheel.set(0.60);
-      leftShooterWheel.set(-0.60);
-    }
-      else if (stick.getRawButton(4)) {
-      //SHOOTER out
-      rightShooterWheel.set(-0.60);
-      leftShooterWheel.set(0.60);
-    }
-    else {
+    double right_trigger = stick.getRawAxis(3);
+    double left_trigger = stick.getRawAxis(2);
+
+
+     if (Math.abs(right_trigger) > 0.1) {
+      //wheels out
+        rightShooterWheel.set(0.60);
+        leftShooterWheel.set(-0.60);
+        intake_setpoint = 0.614;
+      }
+  
+     else if (Math.abs(left_trigger) > 0.1) {
+      //wheels in
+        rightShooterWheel.set(-0.30);
+        leftShooterWheel.set(0.30);
+      }
+
+      else {
       rightShooterWheel.set(0);
       leftShooterWheel.set(0);
     }
@@ -336,12 +361,23 @@ public class Blinkin {
       intakeAxles.set(1);
     }
     else if (stick.getRawButton(6)) {
-      //NOTE IN 
+      //NOTE IN
+      //belt in 
       intakeAxles.set(-1);
+      rightShooterBelt.set(0.40);
+      leftShooterBelt.set(-0.40);
     }
+    else if (stick.getRawButton(7)) {
+      //blet out
+      rightShooterBelt.set(-0.20);
+      leftShooterBelt.set(0.20);
+    }
+    
     else {
       //STOP
       intakeAxles.set(0);
+      rightShooterBelt.set(0);
+      leftShooterBelt.set(0);
 
     }
     
@@ -368,7 +404,27 @@ public class Blinkin {
       liftyLeft.set(0);
       liftyRight.set(0);
     }*/
-    if (stick.getRawButton(1)) {
+   
+     /*  int povUp = stick.getPOV(0);
+      int povDown = stick.getPOV(180);
+      int POVnotPressed = stick.getPOV(-1);
+
+    if (stick.getRawButton(povUp)){
+      liftyLeft.set(0.50);
+      liftyRight.set(-0.50);
+    }
+
+   else if (stick.getRawButton(povDown)){
+      liftyLeft.set(-0.50);
+      liftyRight.set(0.50);}
+
+   else if (stick.getRawButton(P)){
+      liftyLeft.set(0);
+      liftyRight.set(0);}
+   
+   
+   
+   if (stick.getRawButton(1)) {
       //CLIMBERS DOWN
       liftyLeft.set(-0.50);
       liftyRight.set(0.50);
@@ -381,7 +437,7 @@ public class Blinkin {
     else {
       liftyLeft.set(0);
       liftyRight.set(0);}
-
+*/
   }
 
   @Override
