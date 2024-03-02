@@ -51,33 +51,33 @@ public class Robot extends TimedRobot {
   enum SystemState { UserControl, Handoff1, Handoff2, Handoff3 };
 
   SystemState system_state = SystemState.UserControl;
-/* 
-public class Blinkin {
 
-  Spark blinkin = new Spark(0);
+/*public class Blinkin {
+
+  blinkin = new Blinkin(0);
   Joystick driverController = new Joystick(0);
   public Blinkin() {
   }
   
-  public void lightsCone() {
+  public void lightsOrange() {
     blinkin.set(0.69);
   }
-  public void lightsCube() {
+  public void lightsGreen() {
     blinkin.set(0.91);
   }
-  public void normalight() {
+  public void lightsPink() {
     blinkin.set(0.57);
   }
 
   public void teleopPeriodic() {
   if(driverController.getRawButton(6)){
-  lightsCone();
+  lightsOrange();
   }
   else if(driverController.getRawButton(4)){
-  lightsCube();
+  lightsGreen();
   }
   else{
-  normalight();
+  lightsPink();
   }
   }}*/
 
@@ -231,7 +231,7 @@ public class Blinkin {
     else if (stick.getRawButton(4)){
       //speaker scoring/ handoff
       intake_setpoint = 0.481;
-      shooter_setpoint = 0.898;
+      shooter_setpoint = 0.905;
     
     }
 
@@ -290,6 +290,9 @@ public class Blinkin {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+
+
+    
     /*wrist_setpoint = 1.75;
     lift_setpoint = 2.28;
 
@@ -421,9 +424,8 @@ public class Blinkin {
    else if (stick.getRawButton(P)){
       liftyLeft.set(0);
       liftyRight.set(0);}
-   
-   
-   
+   */
+
    if (stick.getRawButton(1)) {
       //CLIMBERS DOWN
       liftyLeft.set(-0.50);
@@ -436,8 +438,8 @@ public class Blinkin {
     }
     else {
       liftyLeft.set(0);
-      liftyRight.set(0);}
-*/
+      liftyRight.set(0);
+    }
   }
 
   @Override
