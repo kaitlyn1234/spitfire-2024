@@ -291,24 +291,65 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 
-
+    autonomy_timer.start();
     
-    /*wrist_setpoint = 1.75;
-    lift_setpoint = 2.28;
-
-    if (autonomy_timer.hasElapsed(10)) {
-      rightintake.set(0.0);
-      leftintake.set(0.0);
+    
+    if (autonomy_timer.hasElapsed(0.01)) {
+      shooter_setpoint = 0.905;
+      rightShooterWheel.set(0.60);
+      leftShooterWheel.set(-0.60);
     }
+
+    else if (autonomy_timer.hasElapsed(1.5)) {
+     // intakeAxles.set(-0.5);
+      rightShooterBelt.set(0.60);
+      leftShooterBelt.set(-0.60);
+    }
+/* 
+
+    else if (autonomy_timer.hasElapsed(2)) {
+      intake_setpoint = 0.924;
+      intakeAxles.set(1);
+      rightShooterBelt.set(0);
+      leftShooterBelt.set(0);
+    }
+
+
+
     else if (autonomy_timer.hasElapsed(5)) {
-      rightintake.set(-0.3);
-      leftintake.set(-0.3);
+      //stop axles
+      intakeAxles.set(0);
+
+      //intake handoff position
+      intake_setpoint = 0.481;
+
+      //wheels out
+      rightShooterWheel.set(0.60);
+      leftShooterWheel.set(-0.60);
+    }
+
+
+
+    else if (autonomy_timer.hasElapsed(5.5)) {
+      intakeAxles.set(-1);
+      rightShooterBelt.set(0.40);
+      leftShooterBelt.set(-0.40);
+    }
+
+
+
+    else if (autonomy_timer.hasElapsed(7)) {
+      intakeAxles.set(0);
+      rightShooterBelt.set(0);
+      leftShooterBelt.set(0);
     }
     
+
+*/
     clampSetpoints();
-    controlWrist();
-    controlLift();
-    */
+    controlIntake();
+    controlShooter();
+    
   }
 
   @Override
@@ -342,7 +383,7 @@ public class Robot extends TimedRobot {
       //wheels out
         rightShooterWheel.set(0.60);
         leftShooterWheel.set(-0.60);
-        intake_setpoint = 0.614;
+       // intake_setpoint = 0.614;
       }
   
      else if (Math.abs(left_trigger) > 0.1) {
@@ -365,17 +406,9 @@ public class Robot extends TimedRobot {
     }
     else if (stick.getRawButton(6)) {
       //NOTE IN
-      //belt in 
       intakeAxles.set(-1);
-      rightShooterBelt.set(0.40);
-      leftShooterBelt.set(-0.40);
-    }
-    else if (stick.getRawButton(7)) {
-      //blet out
-      rightShooterBelt.set(-0.20);
-      leftShooterBelt.set(0.20);
-    }
     
+    }
     else {
       //STOP
       intakeAxles.set(0);
@@ -384,19 +417,32 @@ public class Robot extends TimedRobot {
 
     }
     
+//SHOOTER BELT IN
+      if (stick.getRawButton(2)){
+      rightShooterBelt.set(0.40);
+      leftShooterBelt.set(-0.40);}
+//shooter belt in
+      else if (stick.getRawButton(7)){
+         rightShooterBelt.set(-0.05);
+      leftShooterBelt.set(0.05);
+    }
+    else {
+       rightShooterBelt.set(0);
+      leftShooterBelt.set(0);
+    }
+      
+    
 
 
+     double axis4 = stick.getRawAxis(4);
+      double axis3 = stick.getRawAxis(3);
 
-
-     /*  double stick_x = stick.getRawAxis(4);
-      double stick_y = stick.getRawAxis(3);
-
-      if (Math.abs(stick_x) > 0.1) {
+      if (Math.abs(axis4) > 0.1) {
       //Climbers up
       liftyLeft.set(0.2);
       liftyRight.set(0.2);
     }
-    else if (Math.abs(stick_y) > 0.1)  {
+    else if (Math.abs(axis3) > 0.1)  {
 
       //Climbers down
       liftyLeft.set(0.2);
@@ -405,43 +451,9 @@ public class Robot extends TimedRobot {
     else {
       //STOP
       liftyLeft.set(0);
-      liftyRight.set(0);
-    }*/
-   
-     /*  int povUp = stick.getPOV(0);
-      int povDown = stick.getPOV(180);
-      int POVnotPressed = stick.getPOV(-1);
-
-    if (stick.getRawButton(povUp)){
-      liftyLeft.set(0.50);
-      liftyRight.set(-0.50);
-    }
-
-   else if (stick.getRawButton(povDown)){
-      liftyLeft.set(-0.50);
-      liftyRight.set(0.50);}
-
-   else if (stick.getRawButton(P)){
-      liftyLeft.set(0);
       liftyRight.set(0);}
-   */
-
-   if (stick.getRawButton(1)) {
-      //CLIMBERS DOWN
-      liftyLeft.set(-0.50);
-      liftyRight.set(0.50);
     }
-    else if (stick.getRawButton(2)) {
-      //CLIMBERS UP
-      liftyLeft.set(0.50);
-      liftyRight.set(-0.50);
-    }
-    else {
-      liftyLeft.set(0);
-      liftyRight.set(0);
-    }
-  }
-
+  
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.

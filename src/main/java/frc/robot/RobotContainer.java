@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class RobotContainer {
   // The robot's subsystems
-  public final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -74,39 +74,36 @@ public class RobotContainer {
             m_robotDrive));
   }
 
-  
-   /* Use this to pass the autonomous command to the main {@link Robot} class.
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
    *
-    @return the command to run in autonomous
-    */
-
-  public Command getAutonomousCommand()  {
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
     // Create config for trajectory
-
-    
-   TrajectoryConfig config = new TrajectoryConfig(
+    TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
         // Add kinematics to ensure max speed is actually obeyed
         .setKinematics(DriveConstants.kDriveKinematics);
 
     // An example trajectory to follow. All units in meters.
-    Trajectory secondNoteTrajectory = TrajectoryGenerator.generateTrajectory(
+    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1.5052, 0), new Translation2d(0, 0)),
+        List.of(new Translation2d(-0.5, 0.10), new Translation2d(-1, -0.10)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(0, 0, new Rotation2d(0)),
+        new Pose2d(-1.5052, 0, new Rotation2d(0)),
         config);
 
-      /*Trajectory thirdNoteTrajectory = TrajectoryGenerator.generateTrajectory(
+   /*  Trajectory backTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1.5052, 0), new Translation2d(0, -.76)),
+        List.of(new Translation2d(0.5, -0.10), new Translation2d(1, 0.10)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(0, 0, new Rotation2d(1.57)),
+        new Pose2d(1.5052, 0, new Rotation2d(0)),
         config);*/
 
     var thetaController = new ProfiledPIDController(
@@ -114,7 +111,7 @@ public class RobotContainer {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        secondNoteTrajectory,
+        exampleTrajectory,
         m_robotDrive::getPose, // Functional interface to feed supplier
         DriveConstants.kDriveKinematics,
 
@@ -126,7 +123,7 @@ public class RobotContainer {
         m_robotDrive);
 
     // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(secondNoteTrajectory.getInitialPose());
+    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
