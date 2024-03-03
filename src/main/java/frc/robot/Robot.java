@@ -8,7 +8,14 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.AutoConstants;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
+
+import java.io.IOException;
+import java.nio.file.Path;
+
 import com.revrobotics.CANSparkMax;
 //import edu.wpi.first.wpilibj.Spark;
 import com.revrobotics.EncoderType;
@@ -17,10 +24,14 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.math.trajectory.Trajectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -40,6 +51,7 @@ public class Robot extends TimedRobot {
   CANSparkMax leftShooterWheel = new CANSparkMax(15, MotorType.kBrushless);
   CANSparkMax liftyLeft = new CANSparkMax(17, MotorType.kBrushless);
   CANSparkMax liftyRight = new CANSparkMax(16, MotorType.kBrushless);
+  Spark blinkin = new Spark(0);
 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
@@ -52,34 +64,34 @@ public class Robot extends TimedRobot {
 
   SystemState system_state = SystemState.UserControl;
 
-/*public class Blinkin {
+public class Blinkin {
 
-  blinkin = new Blinkin(0);
-  Joystick driverController = new Joystick(0);
-  public Blinkin() {
-  }
   
-  public void lightsOrange() {
-    blinkin.set(0.69);
-  }
-  public void lightsGreen() {
-    blinkin.set(0.91);
-  }
-  public void lightsPink() {
+ // Joystick driverController = new Joystick(0);
+  //public Blinkin() {
+ // }
+  
+  /*public void lightsPink() {
     blinkin.set(0.57);
   }
+  public void lightsYellow() {
+    blinkin.set(0.69);
+  }
+  public void lightsBlue() {
+    blinkin.set(0.83);
+  }*/
 
   public void teleopPeriodic() {
-  if(driverController.getRawButton(6)){
-  lightsOrange();
+ /* */ if(stick.getRawButton(5)){
+  blinkin.set(0.57);
   }
-  else if(driverController.getRawButton(4)){
-  lightsGreen();
+  else if(stick.getRawButton(6)){
+  blinkin.set(0.57);
   }
   else{
-  lightsPink();
+   blinkin.set(0.57);
   }
-  }}*/
+  }}
 
   
 
@@ -108,11 +120,16 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+ 
 
   @Override
   public void robotInit() {
+    CameraServer.startAutomaticCapture();
 
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    /*m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("Two Note Auto", kCustomAuto);
+    SmartDashboard.putData("Auto Choices", m_chooser);*/
+
 
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
@@ -231,7 +248,7 @@ public class Robot extends TimedRobot {
     else if (stick.getRawButton(4)){
       //speaker scoring/ handoff
       intake_setpoint = 0.481;
-      shooter_setpoint = 0.905;
+      shooter_setpoint = 0.885;
     
     }
 
@@ -274,12 +291,13 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector",
-     * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-     * = new MyAutoCommand(); break; case "Default Auto": default:
-     * autonomousCommand = new ExampleCommand(); break; }
+    /* 
+     String autoSelected = SmartDashboard.getString("Auto Selector",
+     "Default"); switch(autoSelected) { case "My Auto": autonomousCommand = new MyAutoCommand(); break; case "Default Auto": default:
+     autonomousCommand = new ExampleCommand(); break; }
      */
+
+
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -342,7 +360,7 @@ public class Robot extends TimedRobot {
       //wheels out
         rightShooterWheel.set(0.60);
         leftShooterWheel.set(-0.60);
-        intake_setpoint = 0.614;
+       // intake_setpoint = 0.614;
       }
   
      else if (Math.abs(left_trigger) > 0.1) {
@@ -367,18 +385,29 @@ public class Robot extends TimedRobot {
       //NOTE IN
       //belt in 
       intakeAxles.set(-1);
-      rightShooterBelt.set(0.40);
-      leftShooterBelt.set(-0.40);
-    }
-    else if (stick.getRawButton(7)) {
-      //blet out
-      rightShooterBelt.set(-0.20);
-      leftShooterBelt.set(0.20);
     }
     
     else {
       //STOP
       intakeAxles.set(0);
+
+    }
+
+
+      //Belts
+    if (stick.getRawButton(2)) {
+      //belt in 
+      rightShooterBelt.set(0.40);
+      leftShooterBelt.set(-0.40);
+    }
+    else if (stick.getRawButton(7)) {
+      //blet out
+      rightShooterBelt.set(-0.05);
+      leftShooterBelt.set(0.05);
+    }
+    
+    else {
+      //STOP
       rightShooterBelt.set(0);
       leftShooterBelt.set(0);
 
@@ -426,7 +455,31 @@ public class Robot extends TimedRobot {
       liftyRight.set(0);}
    */
 
-   if (stick.getRawButton(1)) {
+
+
+
+      double axis4 = stick.getRawAxis(4);
+      double axis0 = stick.getRawAxis(0);
+
+      if (Math.abs(axis4) > 0.1) {
+        //climbers UP
+        liftyLeft.set(0.50);
+        liftyRight.set(-0.50);
+      }
+
+      else if (Math.abs(axis0) > 0.1) {
+        //climbers DOWN
+          liftyLeft.set(-0.50);
+          liftyRight.set(0.50);
+      }
+
+      else {
+      liftyLeft.set(0);
+      liftyRight.set(0);
+    }
+
+
+  /*  if (stick.getRawButton(1)) {
       //CLIMBERS DOWN
       liftyLeft.set(-0.50);
       liftyRight.set(0.50);
@@ -439,7 +492,7 @@ public class Robot extends TimedRobot {
     else {
       liftyLeft.set(0);
       liftyRight.set(0);
-    }
+    }*/
   }
 
   @Override
