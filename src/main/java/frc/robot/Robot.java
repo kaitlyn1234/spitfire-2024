@@ -198,77 +198,37 @@ public class Robot extends TimedRobot {
   }
 
   public void arbitrateSetpoints() {
-  /*  if (system_state == SystemState.UserControl) {
-      double stick_x = stick.getRawAxis(1);
-      double stick_y = stick.getRawAxis(5);
-
-      if (Math.abs(stick_x) > 0.1) {
-        shooter_setpoint = shooter_setpoint + stick_x * shooter_joystick_speed;
-      }
-  
-      if (Math.abs(stick_y) > 0.1) {
-        intake_setpoint = intake_setpoint + stick_y * intake_joystick_speed;
-      }
-      if (// handoff button pressed  false) {
-       // system_state = SystemState.Handoff1;
-      }
-      if (/* shoot position button pressed */ //false) {
-        //system_state = SystemState.UserControl; // switch to shoot position state
-     // }
-   //}
-  /*  else if (system_state == SystemState.Handoff1) {
-      shooter_setpoint = 0; // something not zero
-      intake_setpoint = 0; // something not zero
-      if (setpointsAchieved()) {
-         // system_state = SystemState.Handoff2
-      }*/
-   //}
-      double stick_x = stick.getRawAxis(1);
-      double stick_y = stick.getRawAxis(5);
+    double stick_x = stick.getRawAxis(1);
+    double stick_y = stick.getRawAxis(5);
     
-
-
-
-      if (Math.abs(stick_x) > 0.1) {
-        shooter_setpoint = shooter_setpoint + stick_x * shooter_joystick_speed;
-      }
+    if (Math.abs(stick_x) > 0.1) {
+      shooter_setpoint = shooter_setpoint + stick_x * shooter_joystick_speed;
+    }
   
-      if (Math.abs(stick_y) > 0.1) {
-        intake_setpoint = intake_setpoint + stick_y * intake_joystick_speed;
-      }
-
+    if (Math.abs(stick_y) > 0.1) {
+      intake_setpoint = intake_setpoint + stick_y * intake_joystick_speed;
+    }
 
     if (stick.getRawButton(4)) {
       //amp
       shooter_setpoint = 0.6458;
     }
-     
-    else if (stick.getRawButton(3)){
+    else if (stick.getRawButton(3)) {
       //speaker scoring/ handoff
       intake_setpoint = 0.481;
       shooter_setpoint = 0.8956;//905
-    
     }
-
-    else if (stick.getRawButton(1)){
+    else if (stick.getRawButton(1)) {
       //intaking
       intake_setpoint = 0.924; 
-    
-    
     }
-
-    else if (stick.getRawButton(8)){
+    else if (stick.getRawButton(8)) {
       //speaker scoring/ handoff
-      
       shooter_setpoint = 0.905;
-    
     }
-   
   }
-   // The final handoff state should return the system state to user control
   
-
-  
+  // The final handoff state should return the system state to user control
   @Override
   public void robotPeriodic() {
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
@@ -297,183 +257,27 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     System.out.println("Auto Selected" + m_autoSelected);
 
-
-   // m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen((m_autonomousCommand = m_robotContainer.getAutonomousCommand2()));
-
-
-
-
-
-
-    /*
-     String autoSelected = SmartDashboard.getString("Auto Selector",
-     "Default"); switch(autoSelected) { case "My Auto": m_autonomousCommand
-     = new MyAutoCommand(); break; case "Default Auto": default:
-     m_autonomousCommand = new ExampleCommand(); break; }*/
-     
+    switch(m_autoSelected) {
+      case kDefaultAuto:
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_robotContainer.getAutonomousCommand2());
+        break;
+      case kCustomAuto2:
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        break;
+    }
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-  
+    
+    homeSetpoints();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
 
-    switch(m_autoSelected) {
-      case kDefaultAuto:
-      autonomy_timer.start();
-      autonomy_timer.restart();
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-      
-      if (m_autonomousCommand.isFinished() == false) {
-        m_autonomousCommand.end(false);
-      }
-      else if (m_autonomousCommand.isFinished() == true) {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand2();
-      }
-
-      
-
-     /*  if (m_autonomousCommand.isFinished(m_autonomousCommand2 = m_robotContainer.getAutonomousCommand2())) {
-//i know you cannot just put .isFinished
-      }
-       
-      else if (autonomy_timer.hasElapsed(7)) {
-      intakeAxles.set(0);
-      rightShooterBelt.set(0);
-      leftShooterBelt.set(0);
-    }
-
-
-     else if (autonomy_timer.hasElapsed(5.5)) {
-      intakeAxles.set(-1);
-      rightShooterBelt.set(0.40);
-      leftShooterBelt.set(-0.40);
-    }
-    
-      else if (autonomy_timer.hasElapsed(5)) {
-      //stop axles
-      intakeAxles.set(0);
-
-      //intake handoff position
-      intake_setpoint = 0.481;
-
-      //wheels out
-      rightShooterWheel.set(0.60);
-      leftShooterWheel.set(-0.60);
-    }
-
-
-
-    else if (autonomy_timer.hasElapsed(2)) {
-      intake_setpoint = 0.924;
-      intakeAxles.set(1);
-      rightShooterBelt.set(0);
-      leftShooterBelt.set(0);
-    }
-
-
-    else  if (autonomy_timer.hasElapsed(1.5)) {
-      rightShooterBelt.set(0.60);
-      leftShooterBelt.set(-0.60);
-    }
-
-    else if (autonomy_timer.hasElapsed(0.01)) {
-      shooter_setpoint = 0.905;
-      rightShooterWheel.set(0.60);
-      leftShooterWheel.set(-0.60);
-    }
-
-    clampSetpoints();
-    controlIntake();
-    controlShooter();
-*/
-      break;
-
-      case kCustomAuto:
-      autonomy_timer.start();
-      autonomy_timer.restart();
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-      break;
-
-      case kCustomAuto2:
-      autonomy_timer.start();
-      autonomy_timer.restart();
-      intakeAxles.set(0.5);
-      break;
-
-      case kCustomAuto3:
-      autonomy_timer.start();
-      autonomy_timer.restart();
-      intakeAxles.set(0);
-      break;
-    }
-
-
-    autonomy_timer.start();
-    
-    /* 
-
-
-      else if (autonomy_timer.hasElapsed(7)) {
-      intakeAxles.set(0);
-      rightShooterBelt.set(0);
-      leftShooterBelt.set(0);
-    }
-
-
-     else if (autonomy_timer.hasElapsed(5.5)) {
-      intakeAxles.set(-1);
-      rightShooterBelt.set(0.40);
-      leftShooterBelt.set(-0.40);
-    }
-    
-      else if (autonomy_timer.hasElapsed(5)) {
-      //stop axles
-      intakeAxles.set(0);
-
-      //intake handoff position
-      intake_setpoint = 0.481;
-
-      //wheels out
-      rightShooterWheel.set(0.60);
-      leftShooterWheel.set(-0.60);
-    }
-
-
-
-    else if (autonomy_timer.hasElapsed(2)) {
-      intake_setpoint = 0.924;
-      intakeAxles.set(1);
-      rightShooterBelt.set(0);
-      leftShooterBelt.set(0);
-    }
-
-
-
-
-    
-    if (autonomy_timer.hasElapsed(1.5)) {
-      rightShooterBelt.set(0.60);
-      leftShooterBelt.set(-0.60);
-    }
-
-    else if (autonomy_timer.hasElapsed(0.01)) {
-     // intakeAxles.set(-0.5);
-      shooter_setpoint = 0.905;
-      rightShooterWheel.set(0.60);
-      leftShooterWheel.set(-0.60);
-    }
-
-    clampSetpoints();
-    controlIntake();
-    controlShooter();*/
-    
   }
 
   @Override
