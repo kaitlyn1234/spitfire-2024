@@ -316,6 +316,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+  
   }
 
   /** This function is called periodically during autonomous. */
@@ -327,6 +328,13 @@ public class Robot extends TimedRobot {
       autonomy_timer.start();
       autonomy_timer.restart();
       m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+      
+      if (m_autonomousCommand.isFinished() == false) {
+        m_autonomousCommand.end(false);
+      }
+      else if (m_autonomousCommand.isFinished() == true) {
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand2();
+      }
 
       
 
@@ -389,7 +397,8 @@ public class Robot extends TimedRobot {
       case kCustomAuto:
       autonomy_timer.start();
       autonomy_timer.restart();
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_autonomousCommand2 = m_robotContainer.getAutonomousCommand2());
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
       break;
 
       case kCustomAuto2:
