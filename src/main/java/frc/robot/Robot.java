@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
  */
 public class Robot extends TimedRobot {
   Joystick stick = new Joystick(2);
+  Joystick driverController = new Joystick(1);
   
   CANSparkMax shooterPivot = new CANSparkMax(9, MotorType.kBrushless);
   CANSparkMax intakePivot = new CANSparkMax(18, MotorType.kBrushless);
@@ -223,22 +224,29 @@ public class Robot extends TimedRobot {
       }
 
 
-    if (stick.getRawButton(3)) {
+    if (stick.getRawButton(4)) {
       //amp
-      shooter_setpoint = 0.6624;
+      shooter_setpoint = 0.6458;
     }
      
-    else if (stick.getRawButton(4)){
+    else if (stick.getRawButton(3)){
       //speaker scoring/ handoff
       intake_setpoint = 0.481;
-      shooter_setpoint = 0.905;
+      shooter_setpoint = 0.8956;//905
     
     }
 
     else if (stick.getRawButton(1)){
       //intaking
-      intake_setpoint = 0.924;
+      intake_setpoint = 0.924; 
     
+    
+    }
+
+    else if (stick.getRawButton(8)){
+      //speaker scoring/ handoff
+      
+      shooter_setpoint = 0.905;
     
     }
    
@@ -293,30 +301,23 @@ public class Robot extends TimedRobot {
 
     autonomy_timer.start();
     
-    
-    if (autonomy_timer.hasElapsed(0.01)) {
-      shooter_setpoint = 0.905;
-      rightShooterWheel.set(0.60);
-      leftShooterWheel.set(-0.60);
-    }
+    /* 
 
-    else if (autonomy_timer.hasElapsed(1.5)) {
-     // intakeAxles.set(-0.5);
-      rightShooterBelt.set(0.60);
-      leftShooterBelt.set(-0.60);
-    }
-/* 
 
-    else if (autonomy_timer.hasElapsed(2)) {
-      intake_setpoint = 0.924;
-      intakeAxles.set(1);
+      else if (autonomy_timer.hasElapsed(7)) {
+      intakeAxles.set(0);
       rightShooterBelt.set(0);
       leftShooterBelt.set(0);
     }
 
 
-
-    else if (autonomy_timer.hasElapsed(5)) {
+     else if (autonomy_timer.hasElapsed(5.5)) {
+      intakeAxles.set(-1);
+      rightShooterBelt.set(0.40);
+      leftShooterBelt.set(-0.40);
+    }
+    
+      else if (autonomy_timer.hasElapsed(5)) {
       //stop axles
       intakeAxles.set(0);
 
@@ -330,22 +331,29 @@ public class Robot extends TimedRobot {
 
 
 
-    else if (autonomy_timer.hasElapsed(5.5)) {
-      intakeAxles.set(-1);
-      rightShooterBelt.set(0.40);
-      leftShooterBelt.set(-0.40);
-    }
-
-
-
-    else if (autonomy_timer.hasElapsed(7)) {
-      intakeAxles.set(0);
+    else if (autonomy_timer.hasElapsed(2)) {
+      intake_setpoint = 0.924;
+      intakeAxles.set(1);
       rightShooterBelt.set(0);
       leftShooterBelt.set(0);
     }
-    
+
+
 
 */
+    
+    if (autonomy_timer.hasElapsed(1.5)) {
+      rightShooterBelt.set(0.60);
+      leftShooterBelt.set(-0.60);
+    }
+
+    else if (autonomy_timer.hasElapsed(0.01)) {
+     // intakeAxles.set(-0.5);
+      shooter_setpoint = 0.905;
+      rightShooterWheel.set(0.60);
+      leftShooterWheel.set(-0.60);
+    }
+
     clampSetpoints();
     controlIntake();
     controlShooter();
@@ -419,8 +427,8 @@ public class Robot extends TimedRobot {
     
 //SHOOTER BELT IN
       if (stick.getRawButton(2)){
-      rightShooterBelt.set(0.40);
-      leftShooterBelt.set(-0.40);}
+      rightShooterBelt.set(0.60);
+      leftShooterBelt.set(-0.60);}
 //shooter belt in
       else if (stick.getRawButton(7)){
          rightShooterBelt.set(-0.05);
@@ -434,15 +442,15 @@ public class Robot extends TimedRobot {
     
 
 
-     double axis4 = stick.getRawAxis(4);
-      double axis3 = stick.getRawAxis(3);
+     double left_Trigger = driverController.getRawAxis(2);
+      double right_Trigger = driverController.getRawAxis(3);
 
-      if (Math.abs(axis4) > 0.1) {
+      if (Math.abs(left_Trigger) > 0.1) {
       //Climbers up
       liftyLeft.set(0.2);
       liftyRight.set(0.2);
     }
-    else if (Math.abs(axis3) > 0.1)  {
+    else if (Math.abs(right_Trigger) > 0.1)  {
 
       //Climbers down
       liftyLeft.set(0.2);
@@ -453,6 +461,7 @@ public class Robot extends TimedRobot {
       liftyLeft.set(0);
       liftyRight.set(0);}
     }
+    
   
   @Override
   public void testInit() {
