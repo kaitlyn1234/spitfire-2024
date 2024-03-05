@@ -16,6 +16,7 @@ import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
  * project.
  */
 public class Robot extends TimedRobot {
+
   Joystick stick = new Joystick(2);
   Joystick driverController = new Joystick(1);
   
@@ -44,6 +46,9 @@ public class Robot extends TimedRobot {
 
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
+  private static final String kCustomAuto2 = "My Auto 2";
+  private static final String kCustomAuto3 = "Nothing";
+
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser <>();
 
@@ -106,6 +111,7 @@ public class Robot extends TimedRobot {
   public Timer autonomy_timer = new Timer();
 
   private Command m_autonomousCommand;
+  private Command m_autonomousCommand2;
 
   private RobotContainer m_robotContainer;
 
@@ -113,8 +119,16 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
 
+    
+    SmartDashboard.putData("Auto Choices", m_chooser);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("Second Auto", kCustomAuto);
+    m_chooser.addOption("Third Auto", kCustomAuto2);
+    m_chooser.addOption("Nothing", kCustomAuto3);
 
+    CameraServer.startAutomaticCapture();
+
+    m_autoSelected = m_chooser.getSelected();
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -280,14 +294,23 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autoSelected = m_chooser.getSelected();
+    System.out.println("Auto Selected" + m_autoSelected);
+
+
+   // m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen((m_autonomousCommand = m_robotContainer.getAutonomousCommand2()));
+
+
+
+
+
 
     /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector",
-     * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-     * = new MyAutoCommand(); break; case "Default Auto": default:
-     * autonomousCommand = new ExampleCommand(); break; }
-     */
+     String autoSelected = SmartDashboard.getString("Auto Selector",
+     "Default"); switch(autoSelected) { case "My Auto": m_autonomousCommand
+     = new MyAutoCommand(); break; case "Default Auto": default:
+     m_autonomousCommand = new ExampleCommand(); break; }*/
+     
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -298,6 +321,90 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+
+    switch(m_autoSelected) {
+      case kDefaultAuto:
+      autonomy_timer.start();
+      autonomy_timer.restart();
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+      
+
+     /*  if (m_autonomousCommand.isFinished(m_autonomousCommand2 = m_robotContainer.getAutonomousCommand2())) {
+//i know you cannot just put .isFinished
+      }
+       
+      else if (autonomy_timer.hasElapsed(7)) {
+      intakeAxles.set(0);
+      rightShooterBelt.set(0);
+      leftShooterBelt.set(0);
+    }
+
+
+     else if (autonomy_timer.hasElapsed(5.5)) {
+      intakeAxles.set(-1);
+      rightShooterBelt.set(0.40);
+      leftShooterBelt.set(-0.40);
+    }
+    
+      else if (autonomy_timer.hasElapsed(5)) {
+      //stop axles
+      intakeAxles.set(0);
+
+      //intake handoff position
+      intake_setpoint = 0.481;
+
+      //wheels out
+      rightShooterWheel.set(0.60);
+      leftShooterWheel.set(-0.60);
+    }
+
+
+
+    else if (autonomy_timer.hasElapsed(2)) {
+      intake_setpoint = 0.924;
+      intakeAxles.set(1);
+      rightShooterBelt.set(0);
+      leftShooterBelt.set(0);
+    }
+
+
+    else  if (autonomy_timer.hasElapsed(1.5)) {
+      rightShooterBelt.set(0.60);
+      leftShooterBelt.set(-0.60);
+    }
+
+    else if (autonomy_timer.hasElapsed(0.01)) {
+      shooter_setpoint = 0.905;
+      rightShooterWheel.set(0.60);
+      leftShooterWheel.set(-0.60);
+    }
+
+    clampSetpoints();
+    controlIntake();
+    controlShooter();
+*/
+      break;
+
+      case kCustomAuto:
+      autonomy_timer.start();
+      autonomy_timer.restart();
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_autonomousCommand2 = m_robotContainer.getAutonomousCommand2());
+      break;
+
+      case kCustomAuto2:
+      autonomy_timer.start();
+      autonomy_timer.restart();
+      intakeAxles.set(0.5);
+      break;
+
+      case kCustomAuto3:
+      autonomy_timer.start();
+      autonomy_timer.restart();
+      intakeAxles.set(0);
+      break;
+    }
+
 
     autonomy_timer.start();
     
@@ -340,7 +447,7 @@ public class Robot extends TimedRobot {
 
 
 
-*/
+
     
     if (autonomy_timer.hasElapsed(1.5)) {
       rightShooterBelt.set(0.60);
@@ -356,7 +463,7 @@ public class Robot extends TimedRobot {
 
     clampSetpoints();
     controlIntake();
-    controlShooter();
+    controlShooter();*/
     
   }
 
@@ -442,12 +549,12 @@ public class Robot extends TimedRobot {
     
 
 
-     double left_Trigger = driverController.getRawAxis(2);
+      double left_Trigger = driverController.getRawAxis(2);
       double right_Trigger = driverController.getRawAxis(3);
 
       if (Math.abs(left_Trigger) > 0.1) {
       //Climbers up
-      liftyLeft.set(0.2);
+      liftyLeft.set(-0.2);
       liftyRight.set(0.2);
     }
     else if (Math.abs(right_Trigger) > 0.1)  {
