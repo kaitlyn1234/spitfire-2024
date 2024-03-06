@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.List;
 
+
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -94,9 +95,9 @@ public class RobotContainer {
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(-0.5, 0.02), new Translation2d(-1, -0.02)),
+        List.of(new Translation2d(0.5, 0.02), new Translation2d(1, -0.02)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(-1.5052, 0, new Rotation2d(0)),
+        new Pose2d(1.6, 0, new Rotation2d(0)),
         config);
 
    /*  Trajectory backTrajectory = TrajectoryGenerator.generateTrajectory(
@@ -125,7 +126,7 @@ public class RobotContainer {
         m_robotDrive);
 
     // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+   // m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
@@ -150,11 +151,11 @@ public class RobotContainer {
 
   Trajectory backTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
+        new Pose2d(1.6, 0, new Rotation2d(0)),
         // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(0.5, -0.10), new Translation2d(1, 0.10)),
+        List.of(new Translation2d(1, -0.02), new Translation2d(0.5, 0.02)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(1.5052, 0, new Rotation2d(0)),
+        new Pose2d(0, 0, new Rotation2d(0)),
         config);
 
     var thetaController = new ProfiledPIDController(

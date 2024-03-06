@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,6 +32,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  public Command getStartingConfiguration(){
+    shooter_setpoint = .8956;
+    leftShooterWheel.set(-.60);
+    rightShooterWheel.set(.60);
+    return getStartingConfiguration();
+  }
+
+
 
   Joystick stick = new Joystick(2);
   Joystick driverController = new Joystick(1);
@@ -56,38 +67,7 @@ public class Robot extends TimedRobot {
   double intake_joystick_speed =  0.01;
   enum SystemState { UserControl, Handoff1, Handoff2, Handoff3 };
 
-  SystemState system_state = SystemState.UserControl;
-
-/*public class Blinkin {
-
-  blinkin = new Blinkin(0);
-  Joystick driverController = new Joystick(0);
-  public Blinkin() {
-  }
-  
-  public void lightsOrange() {
-    blinkin.set(0.69);
-  }
-  public void lightsGreen() {
-    blinkin.set(0.91);
-  }
-  public void lightsPink() {
-    blinkin.set(0.57);
-  }
-
-  public void teleopPeriodic() {
-  if(driverController.getRawButton(6)){
-  lightsOrange();
-  }
-  else if(driverController.getRawButton(4)){
-  lightsGreen();
-  }
-  else{
-  lightsPink();
-  }
-  }}*/
-
-  
+SystemState system_state = SystemState.UserControl;
 
  SlewRateLimiter shooter_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
  SlewRateLimiter intake_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
@@ -111,7 +91,6 @@ public class Robot extends TimedRobot {
   public Timer autonomy_timer = new Timer();
 
   private Command m_autonomousCommand;
-  private Command m_autonomousCommand2;
 
   private RobotContainer m_robotContainer;
 
@@ -124,7 +103,6 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("Second Auto", kCustomAuto);
     m_chooser.addOption("Third Auto", kCustomAuto2);
-    m_chooser.addOption("Nothing", kCustomAuto3);
 
     CameraServer.startAutomaticCapture();
 
@@ -256,15 +234,9 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
     System.out.println("Auto Selected" + m_autoSelected);
-
-    switch(m_autoSelected) {
-      case kDefaultAuto:
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_robotContainer.getAutonomousCommand2());
-        break;
-      case kCustomAuto2:
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        break;
-    }
+      
+   
+    
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -277,7 +249,59 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
+     switch(m_autoSelected) {
+      case kDefaultAuto:
+      autonomy_timer.reset();
+      autonomy_timer.start();
+      
+      /*if (autonomy_timer.hasElapsed(9)) {
+          intakeAxles.set(0);
+          leftShooterBelt.set(0);
+          rightShooterBelt.set(0);
+          leftShooterBelt.set(0);
+          rightShooterBelt.set(0);
+        }
+       else if (autonomy_timer.hasElapsed(8)) {
+          intakeAxles.set(.5);
+          leftShooterBelt.set(-.60);
+          rightShooterBelt.set(.60);
+        }
+        else if (autonomy_timer.hasElapsed(5)) {
+          leftShooterWheel.set(-.60);
+          rightShooterWheel.set(.60);
+          intake_setpoint = 0.481;
+        }
+        else if (autonomy_timer.hasElapsed(3.2)) {
+          intakeAxles.set(-1);
+        }*/
+        if (autonomy_timer.hasElapsed(3)) {
+          m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_robotContainer.getAutonomousCommand2());
+          /*leftShooterWheel.set(0);
+          rightShooterWheel.set(0);
+          leftShooterBelt.set(0);
+          rightShooterBelt.set(0);*/
+        }
+        else if (autonomy_timer.hasElapsed(2.5)) {
+          intake_setpoint = 0.924; 
+          leftShooterBelt.set(-.60);
+          rightShooterBelt.set(.60);
+        }
+        else if (autonomy_timer.hasElapsed(.01)) {
+          shooter_setpoint = .8956;
+          leftShooterWheel.set(-.60);
+          rightShooterWheel.set(.60);
+        }
+        clampSetpoints();
+        controlIntake();
+        controlShooter();
+        break;
+      case kCustomAuto:
+         m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_robotContainer.getAutonomousCommand2());
+        break;
+      case kCustomAuto2:
+           m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        break;
+      }
   }
 
   @Override
@@ -311,45 +335,39 @@ public class Robot extends TimedRobot {
       //wheels out
         rightShooterWheel.set(0.60);
         leftShooterWheel.set(-0.60);
-       // intake_setpoint = 0.614;
       }
   
      else if (Math.abs(left_trigger) > 0.1) {
       //wheels in
-        rightShooterWheel.set(-0.30);
-        leftShooterWheel.set(0.30);
+        rightShooterWheel.set(-0.10);
+        leftShooterWheel.set(0.10);
       }
 
       else {
       rightShooterWheel.set(0);
       leftShooterWheel.set(0);
     }
-
-
-
-        //INTAKE AXLE
+//INTAKE AXLE
     if (stick.getRawButton(5)) {
-      //NOTE OUT
+//NOTE OUT
       intakeAxles.set(1);
     }
     else if (stick.getRawButton(6)) {
-      //NOTE IN
+//NOTE IN
       intakeAxles.set(-1);
-    
     }
     else {
       //STOP
       intakeAxles.set(0);
       rightShooterBelt.set(0);
       leftShooterBelt.set(0);
-
     }
     
 //SHOOTER BELT IN
       if (stick.getRawButton(2)){
       rightShooterBelt.set(0.60);
       leftShooterBelt.set(-0.60);}
-//shooter belt in
+//SHOOTER BELT OUT
       else if (stick.getRawButton(7)){
          rightShooterBelt.set(-0.05);
       leftShooterBelt.set(0.05);
@@ -359,9 +377,6 @@ public class Robot extends TimedRobot {
       leftShooterBelt.set(0);
     }
       
-    
-
-
       double left_Trigger = driverController.getRawAxis(2);
       double right_Trigger = driverController.getRawAxis(3);
 
