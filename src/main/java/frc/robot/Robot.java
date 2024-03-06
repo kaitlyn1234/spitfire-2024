@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.Joystick;
 import com.revrobotics.CANSparkMax;
-//import edu.wpi.first.wpilibj.Spark;
 import com.revrobotics.EncoderType;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -24,6 +24,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,15 +37,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
  * project.
  */
 public class Robot extends TimedRobot {
-
-  public Command getStartingConfiguration(){
-    shooter_setpoint = .8956;
-    leftShooterWheel.set(-.60);
-    rightShooterWheel.set(.60);
-    return getStartingConfiguration();
-  }
-
-
 
   Joystick stick = new Joystick(2);
   Joystick driverController = new Joystick(1);
@@ -58,7 +54,6 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private static final String kCustomAuto2 = "My Auto 2";
-  private static final String kCustomAuto3 = "Nothing";
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser <>();
@@ -67,14 +62,13 @@ public class Robot extends TimedRobot {
   double intake_joystick_speed =  0.01;
   enum SystemState { UserControl, Handoff1, Handoff2, Handoff3 };
 
-SystemState system_state = SystemState.UserControl;
+ SystemState system_state = SystemState.UserControl;
 
  SlewRateLimiter shooter_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
  SlewRateLimiter intake_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
 
  PIDController shooter_pos_pid = new PIDController(2.5, 0.0, 0.0);
  PIDController intake_pos_pid = new PIDController(2.5, 0.0, 0.0);
-
 
 
   double intake_setpoint_lower_limit = 0.479;
@@ -89,20 +83,19 @@ SystemState system_state = SystemState.UserControl;
   
 
   public Timer autonomy_timer = new Timer();
-
   private Command m_autonomousCommand;
-
+  private Command m_autonomousCommand2;
+  private Command m_autonomousCommand3;
+  private Command secondary_AutonomousCommand;
   private RobotContainer m_robotContainer;
 
 
   @Override
   public void robotInit() {
-
-    
     SmartDashboard.putData("Auto Choices", m_chooser);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("Second Auto", kCustomAuto);
-    m_chooser.addOption("Third Auto", kCustomAuto2);
+    m_chooser.addOption("First Auto", kCustomAuto);
+    m_chooser.addOption("Second Auto", kCustomAuto2);
 
     CameraServer.startAutomaticCapture();
 
@@ -112,7 +105,7 @@ SystemState system_state = SystemState.UserControl;
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-   homeSetpoints();
+    homeSetpoints();
   }
 
   public void homeSetpoints() {
@@ -164,15 +157,6 @@ SystemState system_state = SystemState.UserControl;
     double rate_limited_setpoint = shooter_rate_limiter.calculate(shooter_setpoint);
     double shooter_cmd = shooter_pos_pid.calculate(getShooterFeedback(), rate_limited_setpoint);
     shooterPivot.set(-shooter_cmd);
-  }
-
-  public boolean setpointsAchieved() {
-    double setpoint_tol = 0.05;
-    boolean intake_achieved = Math.abs(intake_setpoint - getIntakeAngle()) < setpoint_tol;
-
-    boolean shooter_achieved = false; // do the same thing for the shooter! (add the abs check)
-
-    return intake_achieved && shooter_achieved;
   }
 
   public void arbitrateSetpoints() {
@@ -234,26 +218,80 @@ SystemState system_state = SystemState.UserControl;
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
     System.out.println("Auto Selected" + m_autoSelected);
-      
-   
-    
+      autonomy_timer.reset();
+      autonomy_timer.start();
 
+      switch(m_autoSelected) {
+        case kDefaultAuto:
+        m_autonomousCommand = m_robotContainer.testAutoCommand();
+        break;
+      }
+        
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
+    if (m_autonomousCommand != null && m_autonomousCommand2 == null && m_autonomousCommand3 == null) {
       m_autonomousCommand.schedule();
     }
-    
-    homeSetpoints();
+
+    else if (m_autonomousCommand == null && m_autonomousCommand2 != null && m_autonomousCommand3 == null) {
+      m_autonomousCommand2.schedule();
+    }
+
+    else if(m_autonomousCommand == null && m_autonomousCommand2 == null && m_autonomousCommand3 != null) {
+      m_autonomousCommand3.schedule();
+    }
+
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-     switch(m_autoSelected) {
+    switch (m_autoSelected) {
       case kDefaultAuto:
-      autonomy_timer.reset();
-      autonomy_timer.start();
-      
+
+       if (autonomy_timer.hasElapsed(11)) {
+          intakeAxles.set(0);
+          leftShooterBelt.set(0);
+          rightShooterBelt.set(0);
+          leftShooterWheel.set(0);
+          rightShooterWheel.set(0);
+        }
+       else if (autonomy_timer.hasElapsed(8)) {
+          intakeAxles.set(-1);
+          leftShooterBelt.set(-.60);
+          rightShooterBelt.set(.60);
+          shooter_setpoint = 0.878;
+        }
+        else if (autonomy_timer.hasElapsed(5)) {
+          leftShooterWheel.set(-.60);
+          rightShooterWheel.set(.60);
+          intake_setpoint = 0.481;
+        }
+        else if (autonomy_timer.hasElapsed(4)) {
+          intakeAxles.set(0);
+        }
+        else if (autonomy_timer.hasElapsed(3)) {
+          leftShooterWheel.set(0);
+          rightShooterWheel.set(0);
+          leftShooterBelt.set(0);
+          rightShooterBelt.set(0);
+        }
+        else if (autonomy_timer.hasElapsed(1.5)) {
+          leftShooterBelt.set(-.60);
+          rightShooterBelt.set(.60);
+          intakeAxles.set(1);
+        }
+        else if (autonomy_timer.hasElapsed(.01)) {
+          shooter_setpoint = .8956;
+          leftShooterWheel.set(-.60);
+          rightShooterWheel.set(.60);
+          intake_setpoint = 0.924; //.93 
+
+        }
+
+        clampSetpoints();
+        controlIntake();
+        controlShooter();
+    }
       /*if (autonomy_timer.hasElapsed(9)) {
           intakeAxles.set(0);
           leftShooterBelt.set(0);
@@ -273,13 +311,12 @@ SystemState system_state = SystemState.UserControl;
         }
         else if (autonomy_timer.hasElapsed(3.2)) {
           intakeAxles.set(-1);
-        }*/
+        }
         if (autonomy_timer.hasElapsed(3)) {
-          m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_robotContainer.getAutonomousCommand2());
           /*leftShooterWheel.set(0);
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
-          rightShooterBelt.set(0);*/
+          rightShooterBelt.set(0);
         }
         else if (autonomy_timer.hasElapsed(2.5)) {
           intake_setpoint = 0.924; 
@@ -295,14 +332,12 @@ SystemState system_state = SystemState.UserControl;
         controlIntake();
         controlShooter();
         break;
-      case kCustomAuto:
-         m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_robotContainer.getAutonomousCommand2());
+      /*case kCustomAuto:
+       m_autonomousCommand = m_robotContainer.getAutonomousCommand().andThen(m_robotContainer.getAutonomousCommand2());
         break;
       case kCustomAuto2:
            m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        break;
-      }
-  }
+      break;*/}
 
   @Override
   public void teleopInit() {

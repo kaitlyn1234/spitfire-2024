@@ -133,11 +133,12 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 1;
+    public static final int kOperatorControllerPort = 2;
     public static final double kDriveDeadband = 0.05;
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 0.25;
+    public static final double kMaxSpeedMetersPerSecond = 1.1;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
