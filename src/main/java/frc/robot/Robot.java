@@ -93,9 +93,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     SmartDashboard.putData("Auto Choices", m_chooser);
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("First Auto", kCustomAuto);
-    m_chooser.addOption("Second Auto", kCustomAuto2);
+    m_chooser.setDefaultOption("2 Note Auto Center", kDefaultAuto);
+    m_chooser.addOption("2 Note Auto (Sideways)", kCustomAuto);
+    m_chooser.addOption("3 Note Auto", kCustomAuto2);
 
     CameraServer.startAutomaticCapture();
 
@@ -255,7 +255,7 @@ public class Robot extends TimedRobot {
     switch (m_autoSelected) {
       case kDefaultAuto:
 
-       if (autonomy_timer.hasElapsed(11)) {
+       if (autonomy_timer.hasElapsed(15)) {
           intakeAxles.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
@@ -270,6 +270,7 @@ public class Robot extends TimedRobot {
         }
         else if(autonomy_timer.hasElapsed(6.1)) {
           intakeAxles.set(-1);
+          shooter_setpoint = 0.878;
         }
         else if (autonomy_timer.hasElapsed(6.0)) {
           intakeAxles.set(0);
@@ -293,7 +294,7 @@ public class Robot extends TimedRobot {
           intakeAxles.set(1);
         }
         else if (autonomy_timer.hasElapsed(.01)) {
-          shooter_setpoint = .8956;
+          shooter_setpoint = 0.878;
           leftShooterWheel.set(-.60);
           rightShooterWheel.set(.60);
           intake_setpoint = 0.924; //.93 
@@ -317,7 +318,7 @@ public class Robot extends TimedRobot {
           intakeAxles.set(-1);
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
-          shooter_setpoint = 0.878;
+          shooter_setpoint = 0.85;
         }
         else if (autonomy_timer.hasElapsed(7)) {
           intakeAxles.set(0);
@@ -355,7 +356,7 @@ public class Robot extends TimedRobot {
 
         case kCustomAuto2:
 
-        if (autonomy_timer.hasElapsed(14.9)) {
+        if (autonomy_timer.hasElapsed(15)) {
           intakeAxles.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
@@ -363,81 +364,83 @@ public class Robot extends TimedRobot {
           rightShooterWheel.set(0);
         }
 
-        else if (autonomy_timer.hasElapsed(13.4)) {
+        else if (autonomy_timer.hasElapsed(11)) {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
-          shooter_setpoint = 0.878;
-          intakeAxles.set(-1);
-        }
-
-        else if (autonomy_timer.hasElapsed(12.5)) {
-          leftShooterWheel.set(-.60);
-          rightShooterWheel.set(.60);
-          
+          shooter_setpoint = 0.874;
         }
 
         else if (autonomy_timer.hasElapsed(10)) {
-          intake_setpoint = 0.481;
+          leftShooterWheel.set(-.60);
+          rightShooterWheel.set(.60);
+           intakeAxles.set(-1);
+          
         }
-
-        else if (autonomy_timer.hasElapsed(8.7)) {
-          intakeAxles.set(1);
-        }
-
+          
         else if (autonomy_timer.hasElapsed(8.6)) {
-          shooter_setpoint = .8956;
+          shooter_setpoint = .878;
+          intake_setpoint = 0.481;
            //.93 
         }
 
-       else if (autonomy_timer.hasElapsed(8.5)) {
-          intakeAxles.set(0);
+       else if (autonomy_timer.hasElapsed(8)) {
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
         }
 
-        else if (autonomy_timer.hasElapsed(7)) {
+      else if (autonomy_timer.hasElapsed(7)) {
+          intakeAxles.set(1);
+        }
+
+        else if (autonomy_timer.hasElapsed(6)) {
           intake_setpoint = .924;
         }
 
-       else if (autonomy_timer.hasElapsed(6)) {
+
+       else if (autonomy_timer.hasElapsed(4.5)) {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
-          shooter_setpoint = 0.878;
+          shooter_setpoint = 0.87;
         }
 
-        else if (autonomy_timer.hasElapsed(5)) {
+        else if (autonomy_timer.hasElapsed(4.2)) {
           intakeAxles.set(-1);
         }
 
         else if (autonomy_timer.hasElapsed(4)) {
-          leftShooterWheel.set(-.60);
-          rightShooterWheel.set(.60);
-          
+          leftShooterWheel.set(-.70);
+          rightShooterWheel.set(.70);
+          intake_setpoint = 0.481;
+        }
+
+        else if (autonomy_timer.hasElapsed(3.5)) {
+         intakeAxles.set(0);
         }
 
         else if (autonomy_timer.hasElapsed(3)) {
-            intake_setpoint = 0.481;
-            shooter_setpoint = 0.878;
+         shooter_setpoint = 0.888;
         }
+
         else if (autonomy_timer.hasElapsed(2.5)) {
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
+          
         }
 
-        else if (autonomy_timer.hasElapsed(1.5)) {
-          leftShooterBelt.set(-.60);
-          rightShooterBelt.set(.60);
+        else if (autonomy_timer.hasElapsed(1)) {
+          leftShooterBelt.set(-.80);
+          rightShooterBelt.set(.80);
           intakeAxles.set(1);
         }
 
         else if (autonomy_timer.hasElapsed(.01)) {
-          shooter_setpoint = .8956;
-          leftShooterWheel.set(-.60);
-          rightShooterWheel.set(.60);
+          shooter_setpoint = 0.85;
+          leftShooterWheel.set(-.70);
+          rightShooterWheel.set(.70);
           intake_setpoint = 0.924; //.93 
         }
 
