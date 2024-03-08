@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.blinkin;
 import edu.wpi.first.wpilibj.Joystick;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.EncoderType;
@@ -37,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
  * project.
  */
 public class Robot extends TimedRobot {
+  
 
   Joystick stick = new Joystick(2);
   Joystick driverController = new Joystick(1);
@@ -261,6 +263,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+
+    blinkin.lightsNormal();
+
     switch (m_autoSelected) {
       case kDefaultAuto:
        if (autonomy_timer.hasElapsed(15)) {
@@ -406,18 +411,17 @@ public class Robot extends TimedRobot {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
           shooter_setpoint = 0.87;
-          intakeAxles.set(-1);
         }
 
         else if (autonomy_timer.hasElapsed(4)) {
           leftShooterWheel.set(-.70);
           rightShooterWheel.set(.70);
+          intakeAxles.set(-1);
         }
-        else if (autonomy_timer.hasElapsed(3.25)) {
-          intake_setpoint = 0.481;
-        }
+
         else if (autonomy_timer.hasElapsed(3)) {
          shooter_setpoint = 0.888;
+         intake_setpoint = 0.481;
         }
 
         else if (autonomy_timer.hasElapsed(2.5)) {
@@ -467,6 +471,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
+    blinkin.lightsNormal();
 
     arbitrateSetpoints();
     clampSetpoints();
@@ -537,11 +543,20 @@ public class Robot extends TimedRobot {
       liftyLeft.set(0.5);
       liftyRight.set(-0.5);
     }
+    else if (driverController.getRawButton(1)) {
+      blinkin.lightsAmplify();
+    }
+
     else {
       //STOP
       liftyLeft.set(0);
-      liftyRight.set(0);}
+      liftyRight.set(0);
     }
+  }
+
+
+
+  
     
   
   @Override
@@ -554,3 +569,4 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {}
 }
+
