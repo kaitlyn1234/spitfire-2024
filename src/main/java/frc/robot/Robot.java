@@ -244,15 +244,15 @@ public class Robot extends TimedRobot {
       }
         
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null && m_autonomousCommand2 == null && m_autonomousCommand3 == null) {
+    if (m_autonomousCommand != null && m_autonomousCommand2 == null && m_autonomousCommand3 == null && m_autonomousCommand4 == null) {
       m_autonomousCommand.schedule();
     }
 
-    else if (m_autonomousCommand == null && m_autonomousCommand2 != null && m_autonomousCommand3 == null) {
+    else if (m_autonomousCommand == null && m_autonomousCommand2 != null && m_autonomousCommand3 == null && m_autonomousCommand4 == null) {
       m_autonomousCommand2.schedule();
     }
 
-    else if(m_autonomousCommand == null && m_autonomousCommand2 == null && m_autonomousCommand3 != null) {
+    else if(m_autonomousCommand == null && m_autonomousCommand2 == null && m_autonomousCommand3 != null && m_autonomousCommand4 == null) {
       m_autonomousCommand3.schedule();
     }
     else if(m_autonomousCommand == null && m_autonomousCommand2 == null && m_autonomousCommand3 == null && m_autonomousCommand4 != null) {
