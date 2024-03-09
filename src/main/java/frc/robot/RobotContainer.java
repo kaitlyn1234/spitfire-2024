@@ -84,7 +84,7 @@ public class RobotContainer {
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
-   */
+   */ /*
   public Command getAutonomousCommand() {
     
     // Create config for trajectory
@@ -104,14 +104,6 @@ public class RobotContainer {
         new Pose2d(1.6, 0, new Rotation2d(0)),
         config);
 
-   /*  Trajectory backTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(0.5, -0.10), new Translation2d(1, 0.10)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(1.5052, 0, new Rotation2d(0)),
-        config);*/
 
     var thetaController = new ProfiledPIDController(
         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
@@ -184,7 +176,7 @@ public class RobotContainer {
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
   }
-
+*/
   
     
   public Command testAutoCommand() {
