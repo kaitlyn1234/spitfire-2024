@@ -69,6 +69,7 @@ public final class Constants {
     public static final int shooterPivot = 9;
     public static final int intakePivot = 18;
     public static final int intakeAxles= 11;
+    public static final int secondIntakeAxles= 19;
     public static final int leftShooterBelt = 12;
     public static final int rightShooterBelt = 13;
     public static final int rightShooterWheel = 14;

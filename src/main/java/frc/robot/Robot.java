@@ -4,12 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.DriveConstants;
-//import frc.robot.subsystems.blinkin;
+//import com.revrobotics.blinkin;
 import edu.wpi.first.wpilibj.Joystick;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.EncoderType;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
 
 
@@ -38,14 +40,28 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
  * project.
  */
 public class Robot extends TimedRobot {
-  
+	
+	public class Blinkin {
+
+  Joystick driverController = new Joystick(0);
+public void teleopPeriodic() {
+
+
+}
+	/**
+	 * if the robot is not in hatMode and in normal drive, the LED turns solid white (0.93)
+	 */
+
+	}
 
   Joystick stick = new Joystick(2);
   Joystick driverController = new Joystick(1);
+  Spark blinkin = new Spark(0);
   
   CANSparkMax shooterPivot = new CANSparkMax(9, MotorType.kBrushless);
   CANSparkMax intakePivot = new CANSparkMax(18, MotorType.kBrushless);
   CANSparkMax intakeAxles = new CANSparkMax(11, MotorType.kBrushless);
+  CANSparkMax secondIntakeAxles = new CANSparkMax(19, MotorType.kBrushless);
   CANSparkMax leftShooterBelt = new CANSparkMax(12, MotorType.kBrushless);
   CANSparkMax rightShooterBelt = new CANSparkMax(13, MotorType.kBrushless);
   CANSparkMax rightShooterWheel = new CANSparkMax(14, MotorType.kBrushless);
@@ -83,13 +99,8 @@ public class Robot extends TimedRobot {
   public double intake_setpoint = 0;
   public double shooter_setpoint = 0;
 
-  
-
   public Timer autonomy_timer = new Timer();
   private Command m_autonomousCommand;
-  private Command m_autonomousCommand2;
-  private Command m_autonomousCommand3;
-  private Command m_autonomousCommand4;
   private RobotContainer m_robotContainer;
 
 
@@ -212,10 +223,14 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+   
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -271,6 +286,7 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
        if (autonomy_timer.hasElapsed(15)) {
           intakeAxles.set(0);
+          secondIntakeAxles.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
           leftShooterWheel.set(0);
@@ -284,6 +300,7 @@ public class Robot extends TimedRobot {
         }
         else if(autonomy_timer.hasElapsed(6.1)) {
           intakeAxles.set(-1);
+          secondIntakeAxles.set(1);
           shooter_setpoint = 0.878;
         }
 
@@ -295,6 +312,7 @@ public class Robot extends TimedRobot {
         }
         else if (autonomy_timer.hasElapsed(3.9)) {//3.25
           intakeAxles.set(0);
+          secondIntakeAxles.set(0);
           
         }
         else if (autonomy_timer.hasElapsed(3)) {
@@ -307,6 +325,7 @@ public class Robot extends TimedRobot {
           leftShooterBelt.set(-.60);
           rightShooterBelt.set(.60);
           intakeAxles.set(1);
+          secondIntakeAxles.set(-1);
         }
         else if (autonomy_timer.hasElapsed(.01)) {
           shooter_setpoint = 0.878;
@@ -324,6 +343,7 @@ public class Robot extends TimedRobot {
         case kCustomAuto:
         if (autonomy_timer.hasElapsed(14.9)) {
           intakeAxles.set(0);
+          secondIntakeAxles.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
           leftShooterWheel.set(0);
@@ -334,6 +354,7 @@ public class Robot extends TimedRobot {
         }
         else if (autonomy_timer.hasElapsed(6)) {
           intakeAxles.set(-1);
+          secondIntakeAxles.set(1);
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
         }
@@ -345,6 +366,7 @@ public class Robot extends TimedRobot {
         }
          else if (autonomy_timer.hasElapsed(3.5)) {
           intakeAxles.set(0);
+          secondIntakeAxles.set(0);
         }
         else if (autonomy_timer.hasElapsed(2.7)) {
           leftShooterWheel.set(0);
@@ -352,6 +374,7 @@ public class Robot extends TimedRobot {
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
           intakeAxles.set(1);
+          secondIntakeAxles.set(-1);
         }
         else if (autonomy_timer.hasElapsed(1.5)) {
           leftShooterBelt.set(-1);
@@ -372,6 +395,7 @@ public class Robot extends TimedRobot {
         case kCustomAuto2:
         if (autonomy_timer.hasElapsed(15)) {
           intakeAxles.set(0);
+          secondIntakeAxles.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
           leftShooterWheel.set(0);
@@ -388,6 +412,7 @@ public class Robot extends TimedRobot {
           leftShooterWheel.set(-.60);
           rightShooterWheel.set(.60);
            intakeAxles.set(-1);
+           secondIntakeAxles.set(1);
           
         }
           
@@ -406,6 +431,7 @@ public class Robot extends TimedRobot {
 
       else if (autonomy_timer.hasElapsed(7)) {
           intakeAxles.set(1);
+          secondIntakeAxles.set(-1);
         }
 
         else if (autonomy_timer.hasElapsed(6)) {
@@ -422,6 +448,7 @@ public class Robot extends TimedRobot {
           leftShooterWheel.set(-.70);
           rightShooterWheel.set(.70);
           intakeAxles.set(-1);
+          secondIntakeAxles.set(1);
         }
 
         else if (autonomy_timer.hasElapsed(3)) {
@@ -441,6 +468,7 @@ public class Robot extends TimedRobot {
           leftShooterBelt.set(-.80);
           rightShooterBelt.set(.80);
           intakeAxles.set(1);
+          secondIntakeAxles.set(-1);
         }
 
         else if (autonomy_timer.hasElapsed(.01)) {
@@ -457,6 +485,7 @@ public class Robot extends TimedRobot {
 
         case kCustomAuto3:
         intakeAxles.set(0);
+        secondIntakeAxles.set(0);
         break;
       }
     }
@@ -476,6 +505,16 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
+
+    blinkin.set(0.57);
+
+    if (driverController.getRawButton(1)) {
+       blinkin.set(-0.67);
+    }
+    else if (driverController.getRawButton(2)) {
+      blinkin.set(0.57);
+    }
 
    // blinkin.lightsNormal();
 
@@ -508,14 +547,17 @@ public class Robot extends TimedRobot {
     if (stick.getRawButton(5)) {
     //NOTE in
       intakeAxles.set(1);
+      secondIntakeAxles.set(-1);
     }
     else if (stick.getRawButton(6)) {
     //NOTE out
       intakeAxles.set(-1);
+      secondIntakeAxles.set(1);
     }
     else {
       //STOP
       intakeAxles.set(0);
+      secondIntakeAxles.set(0);
       rightShooterBelt.set(0);
       leftShooterBelt.set(0);
     }
