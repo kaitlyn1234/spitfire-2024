@@ -266,12 +266,12 @@ public class RobotContainer {
         // Pass through these two interior waypoints, making an 's' curve path
         List.of(new Translation2d(-0.5, 0.1), new Translation2d(-1.0, 0.17)),
         // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(-1.5, 0.23, new Rotation2d(-0.5236)),
+        new Pose2d(-1.5, 0.23, new Rotation2d(-0.6370452)),
         config);
 
     Trajectory thirdNoteTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(-1.5, 0.23, new Rotation2d(-0.5236)),
+        new Pose2d(-1.5, 0.23, new Rotation2d(-0.6370452)),
         // Pass through these two interior waypoints, making an 's' curve path
         List.of(new Translation2d(-1.0, 0.17), new Translation2d(-0.5, 0.2)),
         // End 3 meters straight ahead of where we started, facing forward

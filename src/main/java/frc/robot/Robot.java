@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.blinkin;
+//import frc.robot.subsystems.blinkin;
 import edu.wpi.first.wpilibj.Joystick;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.EncoderType;
@@ -182,7 +182,7 @@ public class Robot extends TimedRobot {
     else if (stick.getRawButton(3)) {
       //speaker scoring/ handoff
       intake_setpoint = 0.481;
-      shooter_setpoint = 0.870;//905
+      shooter_setpoint = 0.88;//.87
     }
     else if (stick.getRawButton(1)) {
       //intaking
@@ -231,23 +231,24 @@ public class Robot extends TimedRobot {
         break;
 
         case kCustomAuto:
-        m_autonomousCommand2 = m_robotContainer.testAutoCommand2();
+        m_autonomousCommand = m_robotContainer.testAutoCommand2();
         break;
 
         case kCustomAuto2:
-        m_autonomousCommand3 = m_robotContainer.testAutoCommand3();
+        m_autonomousCommand = m_robotContainer.testAutoCommand3();
         break;
 
         case kCustomAuto3:
-        m_autonomousCommand4 = m_robotContainer.testAutoCommand4();
+        m_autonomousCommand = m_robotContainer.testAutoCommand4();
         break;
       }
         
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null && m_autonomousCommand2 == null && m_autonomousCommand3 == null) {
+    if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
 
+    /*
     else if (m_autonomousCommand == null && m_autonomousCommand2 != null && m_autonomousCommand3 == null) {
       m_autonomousCommand2.schedule();
     }
@@ -257,14 +258,14 @@ public class Robot extends TimedRobot {
     }
     else if(m_autonomousCommand == null && m_autonomousCommand2 == null && m_autonomousCommand3 == null && m_autonomousCommand4 != null) {
       m_autonomousCommand4.schedule();
-    }
+    }*/
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
 
-    blinkin.lightsNormal();
+   // blinkin.lightsNormal();
 
     switch (m_autoSelected) {
       case kDefaultAuto:
@@ -278,21 +279,22 @@ public class Robot extends TimedRobot {
        else if (autonomy_timer.hasElapsed(8)) {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
-          shooter_setpoint = 0.878;
+          shooter_setpoint = 0.8927;
 
         }
         else if(autonomy_timer.hasElapsed(6.1)) {
           intakeAxles.set(-1);
           shooter_setpoint = 0.878;
         }
-        else if (autonomy_timer.hasElapsed(6.0)) {
-          intakeAxles.set(0);
-        }
 
         else if (autonomy_timer.hasElapsed(5)) {
           leftShooterWheel.set(-.60);
           rightShooterWheel.set(.60);
           intake_setpoint = 0.481;
+          //4.25
+        }
+        else if (autonomy_timer.hasElapsed(3.9)) {//3.25
+          intakeAxles.set(0);
           
         }
         else if (autonomy_timer.hasElapsed(3)) {
@@ -320,28 +322,31 @@ public class Robot extends TimedRobot {
         break;
 /* BREAK */
         case kCustomAuto:
-        if (autonomy_timer.hasElapsed(11)) {
+        if (autonomy_timer.hasElapsed(14.9)) {
           intakeAxles.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
         }
-        else if (autonomy_timer.hasElapsed(8)) {
+         else if (autonomy_timer.hasElapsed(11)) {
+          shooter_setpoint = 0.85;
+        }
+        else if (autonomy_timer.hasElapsed(6)) {
           intakeAxles.set(-1);
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
-          shooter_setpoint = 0.85;
-        }
-        else if (autonomy_timer.hasElapsed(7)) {
-          intakeAxles.set(0);
         }
         else if (autonomy_timer.hasElapsed(5)) {
           leftShooterWheel.set(-.60);
+          shooter_setpoint = 0.887;
           rightShooterWheel.set(.60);
           intake_setpoint = 0.481;
         }
-        else if (autonomy_timer.hasElapsed(3)) {
+         else if (autonomy_timer.hasElapsed(3.5)) {
+          intakeAxles.set(0);
+        }
+        else if (autonomy_timer.hasElapsed(2.7)) {
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
@@ -353,9 +358,9 @@ public class Robot extends TimedRobot {
           rightShooterBelt.set(1);
         }
         else if (autonomy_timer.hasElapsed(.01)) {
-          shooter_setpoint = .8956;
-          leftShooterWheel.set(-.60);
-          rightShooterWheel.set(.60);
+          shooter_setpoint = .875; //.8956
+          leftShooterWheel.set(-.70);
+          rightShooterWheel.set(.70);
           intake_setpoint = 0.924; //.93 
 
         }
@@ -420,7 +425,7 @@ public class Robot extends TimedRobot {
         }
 
         else if (autonomy_timer.hasElapsed(3)) {
-         shooter_setpoint = 0.888;
+         shooter_setpoint = 0.870;
          intake_setpoint = 0.481;
         }
 
@@ -472,7 +477,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    blinkin.lightsNormal();
+   // blinkin.lightsNormal();
 
     arbitrateSetpoints();
     clampSetpoints();
@@ -487,8 +492,8 @@ public class Robot extends TimedRobot {
     //JOYSTICK CONTROLL
      if (Math.abs(right_trigger) > 0.1) {
       //wheels out
-        rightShooterWheel.set(0.60);
-        leftShooterWheel.set(-0.60);
+        rightShooterWheel.set(0.65);
+        leftShooterWheel.set(-0.65);
       }
      else if (Math.abs(left_trigger) > 0.1) {
       //wheels in
@@ -517,8 +522,8 @@ public class Robot extends TimedRobot {
     
     //SHOOTER BELT IN
     if (stick.getRawButton(2)){
-      rightShooterBelt.set(0.60);
-      leftShooterBelt.set(-0.60);}
+      rightShooterBelt.set(0.85);
+      leftShooterBelt.set(-0.85);}
     //SHOOTER BELT OUT
     else if (stick.getRawButton(7)){
       rightShooterBelt.set(-0.05);
@@ -534,17 +539,17 @@ public class Robot extends TimedRobot {
 
     if (Math.abs(left_Trigger) > 0.1) {
       //Climbers up
-      liftyLeft.set(-0.3);
-      liftyRight.set(0.3);
+      liftyLeft.set(-0.5);//4
+      liftyRight.set(0.5);//4
     }
     else if (Math.abs(right_Trigger) > 0.1)  {
 
       //Climbers down
-      liftyLeft.set(0.5);
-      liftyRight.set(-0.5);
+      liftyLeft.set(0.85);//75
+      liftyRight.set(-0.85);//75
     }
     else if (driverController.getRawButton(1)) {
-      blinkin.lightsAmplify();
+     // blinkin.lightsAmplify();
     }
 
     else {
