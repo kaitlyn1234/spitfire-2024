@@ -262,25 +262,11 @@ public void teleopPeriodic() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-
-    /*
-    else if (m_autonomousCommand == null && m_autonomousCommand2 != null && m_autonomousCommand3 == null) {
-      m_autonomousCommand2.schedule();
-    }
-
-    else if(m_autonomousCommand == null && m_autonomousCommand2 == null && m_autonomousCommand3 != null) {
-      m_autonomousCommand3.schedule();
-    }
-    else if(m_autonomousCommand == null && m_autonomousCommand2 == null && m_autonomousCommand3 == null && m_autonomousCommand4 != null) {
-      m_autonomousCommand4.schedule();
-    }*/
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
-   // blinkin.lightsNormal();
 
     switch (m_autoSelected) {
       case kDefaultAuto:
@@ -392,7 +378,7 @@ public void teleopPeriodic() {
         controlShooter();
         break;
 /* BREAK */
-        case kCustomAuto2:
+        case kCustomAuto2: // 3 note auto
         if (autonomy_timer.hasElapsed(15)) {
           intakeAxles.set(0);
           secondIntakeAxles.set(0);
@@ -431,29 +417,29 @@ public void teleopPeriodic() {
 
       else if (autonomy_timer.hasElapsed(7)) {
           intakeAxles.set(1);
-          secondIntakeAxles.set(-1);
         }
 
         else if (autonomy_timer.hasElapsed(6)) {
-          intake_setpoint = 0.920;
+          intake_setpoint = 0.924;
         }
 
-       else if (autonomy_timer.hasElapsed(4.5)) {
+       else if (autonomy_timer.hasElapsed(4)) {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
-          shooter_setpoint = 0.87;
+          shooter_setpoint = 0.88;
+          intakeAxles.set(-1);
         }
 
-        else if (autonomy_timer.hasElapsed(4)) {
+        else if (autonomy_timer.hasElapsed(3.5)) {
           leftShooterWheel.set(-.70);
           rightShooterWheel.set(.70);
-          intakeAxles.set(-1);
-          secondIntakeAxles.set(1);
+          intakeAxles.set(0);  
         }
 
         else if (autonomy_timer.hasElapsed(3)) {
-         shooter_setpoint = 0.870;
+         shooter_setpoint = 0.880;
          intake_setpoint = 0.481;
+ 
         }
 
         else if (autonomy_timer.hasElapsed(2.5)) {
@@ -461,21 +447,19 @@ public void teleopPeriodic() {
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
-          
         }
 
         else if (autonomy_timer.hasElapsed(1)) {
           leftShooterBelt.set(-.80);
           rightShooterBelt.set(.80);
           intakeAxles.set(1);
-          secondIntakeAxles.set(-1);
         }
 
         else if (autonomy_timer.hasElapsed(.01)) {
           shooter_setpoint = 0.85;
           leftShooterWheel.set(-.70);
           rightShooterWheel.set(.70);
-          intake_setpoint = 0.920; //.924
+          intake_setpoint = 0.924; //.924
         }
 
         clampSetpoints();
@@ -515,8 +499,6 @@ public void teleopPeriodic() {
     else if (driverController.getRawButton(2)) {
       blinkin.set(0.57);
     }
-
-   // blinkin.lightsNormal();
 
     arbitrateSetpoints();
     clampSetpoints();
