@@ -226,14 +226,14 @@ public class RobotContainer {
 
     Trajectory secondNoteTrajectory = TrajectoryGenerator.generateTrajectory(
         new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(-0.5, 0.1), new Translation2d(-1.0, 0.17)),
-        new Pose2d(-1.5, 0.23, new Rotation2d(-0.6370452)),
+        List.of(new Translation2d(-0.01, 0.01), new Translation2d(-0.015, 0.015)),
+        new Pose2d(-0.02, 0.02, new Rotation2d(-0.75)),
         config);
 
     Trajectory thirdNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(-1.5, 0.23, new Rotation2d(-0.6370452)),
-        List.of(new Translation2d(-1.0, 0.17), new Translation2d(-0.5, 0.2)),
-        new Pose2d(-.15, 0.15, new Rotation2d(-0.5)),
+        new Pose2d(-0.02, 0.02, new Rotation2d(-0.75)),
+        List.of(new Translation2d(-0.015, 0.015), new Translation2d(-0.01, 0.01)),
+        new Pose2d(0, 0, new Rotation2d(0)),
         config);
 
     
@@ -292,11 +292,13 @@ public class RobotContainer {
     Trajectory fourthNoteTrajectory = TrajectoryGenerator.generateTrajectory(
         new Pose2d(0, 0, new Rotation2d(0)),
         List.of(new Translation2d(-0.5, 0.5), new Translation2d(-0.75, 1.5)),
-        new Pose2d(-1.3, 1.6, new Rotation2d(0)),
+        new Pose2d(-1.3, 1.45, new Rotation2d(0)),
         config);
 
+    // -1.3 & 1.6 *Didn't pick up
+
     Trajectory fifthNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(-1.3, 1.6, new Rotation2d(0)),
+        new Pose2d(-1.3, 1.45, new Rotation2d(0)),//1.7
         List.of(new Translation2d(-0.9, 1.2), new Translation2d(-0.5, 0.5)),
         new Pose2d(0, 0, new Rotation2d(0)),
         config);
@@ -402,124 +404,4 @@ public class RobotContainer {
 
     return swerveControllerCommand.andThen(swerveControllerCommand2.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false)));
   }
-  // 4 Note Auto!!!!
-
-  /*
-
-    public Command testAutoCommand5() {
-       TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kAlternateMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        .setKinematics(DriveConstants.kDriveKinematics);
-
-    Trajectory secondNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(-0.5, 0.02), new Translation2d(-1, -0.02)),
-        new Pose2d(-1.6, 0, new Rotation2d(0)),
-        config);
-
-    Trajectory thirdNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(-1.6, 0, new Rotation2d(0)),
-        List.of(new Translation2d(-1, -0.02), new Translation2d(-0.5, 0.02)),
-        new Pose2d(0, 0, new Rotation2d(0)),
-        config);
-    
-    Trajectory fourthNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(-0.5, 0.5), new Translation2d(-0.75, 1.5)),
-        new Pose2d(-1.5, 1.8, new Rotation2d(0)),
-        config);
-
-    Trajectory fifthNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(-1.5, 1.8, new Rotation2d(0)),
-        List.of(new Translation2d(-1.0, 1.2), new Translation2d(-0.5, 0.5)),
-        new Pose2d(0, 0, new Rotation2d(0)),
-        config);
-
-    Trajectory sixthNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(-0.5, 0.5), new Translation2d(-0.75, 1.5)),
-        new Pose2d(1.5, 1.8, new Rotation2d(0)),
-        config);
-
-    Trajectory seventhNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(1.5, 1.8, new Rotation2d(0)),
-        List.of(new Translation2d(-1.0, 1.2), new Translation2d(-0.5, 0.5)),
-        new Pose2d(0, 0, new Rotation2d(0)),
-        config);
-    
-    var thetaController = new ProfiledPIDController(
-        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI); 
-
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        secondNoteTrajectory,
-        m_robotDrive::getPose, 
-        DriveConstants.kDriveKinematics,
-
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
-
-
-    SwerveControllerCommand swerveControllerCommand2 = new SwerveControllerCommand(
-        thirdNoteTrajectory,
-        m_robotDrive::getPose, 
-        DriveConstants.kDriveKinematics,
- 
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
-    
-    SwerveControllerCommand swerveControllerCommand3 = new SwerveControllerCommand(
-        fourthNoteTrajectory,
-        m_robotDrive::getPose, 
-        DriveConstants.kDriveKinematics,
-        
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
-
-    SwerveControllerCommand swerveControllerCommand4 = new SwerveControllerCommand(
-        fifthNoteTrajectory,
-        m_robotDrive::getPose, 
-        DriveConstants.kDriveKinematics,
-
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
-        
-    SwerveControllerCommand swerveControllerCommand5 = new SwerveControllerCommand(
-        sixthNoteTrajectory,
-        m_robotDrive::getPose, 
-        DriveConstants.kDriveKinematics,
-
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
-    
-    SwerveControllerCommand swerveControllerCommand6 = new SwerveControllerCommand(
-        seventhNoteTrajectory,
-        m_robotDrive::getPose, 
-        DriveConstants.kDriveKinematics,
-
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
-
-    return swerveControllerCommand.andThen(swerveControllerCommand2.andThen(swerveControllerCommand3.andThen(swerveControllerCommand4.andThen(swerveControllerCommand5.andThen(swerveControllerCommand6.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false)))))));
-  } */
 }
-
