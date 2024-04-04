@@ -20,6 +20,7 @@ import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -30,6 +31,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.MjpegServer;
+
 
 
 
@@ -109,12 +116,38 @@ public void teleopPeriodic() {
   public void robotInit() {
     SmartDashboard.putData("Auto Choices", m_chooser);
     m_chooser.setDefaultOption("2 Note Auto Center", kDefaultAuto);
-    m_chooser.addOption("2 Note Auto (Sideways Right)", kCustomAuto);
+    m_chooser.addOption("2 Note Auto (Source side blue, Amp side red)", kCustomAuto);
     m_chooser.addOption("3 Note Auto", kCustomAuto2);
     m_chooser.addOption("Leave & Return Starting Zone", kCustomAuto3);
     m_chooser.addOption("4 Note Auto", kCustomAuto4);
 
     CameraServer.startAutomaticCapture();
+   /*
+    UsbCamera usbCamera0 = new UsbCamera("Camera 0", 0);
+    UsbCamera usbCamera1 = new UsbCamera("Camera 1", 1);
+
+    MjpegServer mjpegServer0 = new MjpegServer("Camera 0", 0);
+    MjpegServer mjpegServer1 = new MjpegServer("Camera 1", 1);
+
+    mjpegServer0.setSource(usbCamera0);
+    mjpegServer1.setSource(usbCamera1);
+
+    CvSink cvSink = new CvSink("Camera 0");
+    cvSink.setSource(usbCamera0);
+
+    CvSink cvSink1 = new CvSink("Camera 1");
+    cvSink1.setSource(usbCamera1);
+
+    CvSource outputStream0 = new CvSource("Blur", PixelFormat.kMJPEG, 640, 480, 30);
+    CvSource outputStream1 = new CvSource("Blur", PixelFormat.kMJPEG, 640, 480, 30);
+
+    MjpegServer mjpegServer2 = new MjpegServer("severeblur", 1182);
+    MjpegServer mjpegServer3 = new MjpegServer("severeblur", 1183);
+
+    mjpegServer2.setSource(outputStream0);
+    mjpegServer3.setSource(outputStream1);
+    */
+
 
     m_autoSelected = m_chooser.getSelected();
 
@@ -195,11 +228,11 @@ public void teleopPeriodic() {
     else if (stick.getRawButton(3)) {
       //speaker scoring/ handoff
       intake_setpoint = 0.481;
-      shooter_setpoint = 0.88;//.87
+      shooter_setpoint = 0.89;//.87
     }
     else if (stick.getRawButton(1)) {
       //intaking
-      intake_setpoint = 0.933; 
+      intake_setpoint = 0.923; //933
     }
     else if (stick.getRawButton(8)) {
       //speaker scoring/ handoff
@@ -343,7 +376,7 @@ public void teleopPeriodic() {
 /* BREAK */
         //right2note
         case kCustomAuto:
-        if (autonomy_timer.hasElapsed(14.9)) {
+        if (autonomy_timer.hasElapsed(10)) {
           intakeAxles.set(0);
           secondIntakeAxles.set(0);
           leftShooterBelt.set(0);
@@ -351,42 +384,15 @@ public void teleopPeriodic() {
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
         }
-         else if (autonomy_timer.hasElapsed(11)) {
-          shooter_setpoint = 0.85;
-        }
-        else if (autonomy_timer.hasElapsed(6)) {
-          intakeAxles.set(-1);
-          secondIntakeAxles.set(1);
-          leftShooterBelt.set(-1);
-          rightShooterBelt.set(1);
-        }
-        else if (autonomy_timer.hasElapsed(5)) {
-          leftShooterWheel.set(-.60);
-          shooter_setpoint = 0.887;
-          rightShooterWheel.set(.60);
-          intake_setpoint = 0.481;
-        }
-         else if (autonomy_timer.hasElapsed(3.5)) {
-          intakeAxles.set(0);
-          secondIntakeAxles.set(0);
-        }
-        else if (autonomy_timer.hasElapsed(2.7)) {
-          leftShooterWheel.set(0);
-          rightShooterWheel.set(0);
-          leftShooterBelt.set(0);
-          rightShooterBelt.set(0);
-          intakeAxles.set(1);
-          secondIntakeAxles.set(-1);
-        }
-        else if (autonomy_timer.hasElapsed(1.5)) {
+        else if (autonomy_timer.hasElapsed(2.5)) {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
         }
         else if (autonomy_timer.hasElapsed(.01)) {
           shooter_setpoint = .875; //.8956
-          leftShooterWheel.set(-.70);
-          rightShooterWheel.set(.70);
-          intake_setpoint = 0.924; //.93 
+          leftShooterWheel.set(-.80);
+          rightShooterWheel.set(.80);
+          intake_setpoint = 0.7; //.93 
 
         }
         clampSetpoints();
@@ -529,58 +535,6 @@ public void teleopPeriodic() {
           intake_setpoint = 0.933;
         }
 
-        else if (autonomy_timer.hasElapsed(11)) {
-          leftShooterBelt.set(-1);
-          rightShooterBelt.set(1);
-          shooter_setpoint = 0.874;
-        }
-
-        else if (autonomy_timer.hasElapsed(10)) {
-          leftShooterWheel.set(-.90);
-          rightShooterWheel.set(.90);
-           intakeAxles.set(-1);
-           secondIntakeAxles.set(1);
-          
-        }
-        else if (autonomy_timer.hasElapsed(9)) {
-           intakeAxles.set(0);
-           secondIntakeAxles.set(0);
-        }
-          
-        else if (autonomy_timer.hasElapsed(8.6)) {
-          shooter_setpoint = .878;
-          intake_setpoint = 0.481;
-           //.93 
-        }
-
-       else if (autonomy_timer.hasElapsed(8)) {
-          leftShooterBelt.set(0);
-          rightShooterBelt.set(0);
-          leftShooterWheel.set(0);
-          rightShooterWheel.set(0);
-        }
-
-      else if (autonomy_timer.hasElapsed(7)) {
-          intakeAxles.set(1);
-          secondIntakeAxles.set(-1);
-        }
-
-        else if (autonomy_timer.hasElapsed(6)) {
-          intake_setpoint = 0.933;
-        }
-        else if (autonomy_timer.hasElapsed(4.25)) {
-         intakeAxles.set(-1);
-         secondIntakeAxles.set(1);
-        }
-       else if (autonomy_timer.hasElapsed(4)) {
-          shooter_setpoint = 0.88;
-        }
-
-        else if (autonomy_timer.hasElapsed(3.75)) {
-          leftShooterBelt.set(-1);
-          rightShooterBelt.set(1);
-        }
-
         else if (autonomy_timer.hasElapsed(3.5)) {
           leftShooterWheel.set(-.80);
           rightShooterWheel.set(.80);
@@ -589,12 +543,12 @@ public void teleopPeriodic() {
         }
 
         else if (autonomy_timer.hasElapsed(3)) {
-         shooter_setpoint = 0.880;
+         shooter_setpoint = 0.88;
          intake_setpoint = 0.481;
  
         }
 
-        else if (autonomy_timer.hasElapsed(2.5)) {
+        else if (autonomy_timer.hasElapsed(2)) {
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
@@ -614,6 +568,11 @@ public void teleopPeriodic() {
           rightShooterWheel.set(.85);
           intake_setpoint = 0.933; //.924
         }
+
+        clampSetpoints();
+        controlIntake();
+        controlShooter();
+        break;
       }
     }
 
@@ -656,8 +615,8 @@ public void teleopPeriodic() {
     //JOYSTICK CONTROLL
      if (Math.abs(right_trigger) > 0.1) {
       //wheels out
-        rightShooterWheel.set(0.90);
-        leftShooterWheel.set(-0.90);
+        rightShooterWheel.set(0.95);
+        leftShooterWheel.set(-0.95);
       }
      else if (Math.abs(left_trigger) > 0.1) {
       //wheels in

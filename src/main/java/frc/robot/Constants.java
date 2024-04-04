@@ -76,7 +76,7 @@ public final class Constants {
     public static final int leftShooterWheel = 15;
     public static final int liftyLeft = 17;
     public static final int liftyRight = 16;
-
+    
 
     public final Joystick m_stick = new Joystick(3);
   }
@@ -141,6 +141,7 @@ public final class Constants {
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 1.1;
     public static final double kAlternateMaxSpeedMetersPerSecond = 2;
+    public static final double k3MaxSpeedMetersPerSecond = 3;
 
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;

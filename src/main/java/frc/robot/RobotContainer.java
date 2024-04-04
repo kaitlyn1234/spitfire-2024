@@ -91,7 +91,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
 
-// 2 NOTE AUTO center
+// ???
   public Command getAutonomousCommand() {
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
@@ -130,10 +130,7 @@ public class RobotContainer {
 
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
   }
-
-
-
-// right2note
+///????
   public Command getAutonomousCommand2() {
 
     TrajectoryConfig config = new TrajectoryConfig(
@@ -168,7 +165,7 @@ public class RobotContainer {
   }
 
   
-  // 3 Note Auto
+  // 2noteautocenter
   public Command testAutoCommand() {
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
@@ -217,7 +214,7 @@ public class RobotContainer {
 
     return swerveControllerCommand.andThen(swerveControllerCommand2.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false)));
   }
-
+//right2note
   public Command testAutoCommand2() {
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
@@ -226,13 +223,13 @@ public class RobotContainer {
 
     Trajectory secondNoteTrajectory = TrajectoryGenerator.generateTrajectory(
         new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(-0.01, 0.01), new Translation2d(-0.015, 0.015)),
-        new Pose2d(-0.02, 0.02, new Rotation2d(-0.75)),
+        List.of(new Translation2d(-0.02, 0.02), new Translation2d(-0.025, 0.025)),
+        new Pose2d(-0.03, 0.03, new Rotation2d(-0.75)),
         config);
 
     Trajectory thirdNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(-0.02, 0.02, new Rotation2d(-0.75)),
-        List.of(new Translation2d(-0.015, 0.015), new Translation2d(-0.01, 0.01)),
+        new Pose2d(-0.03, 0.03, new Rotation2d(-0.75)),
+        List.of(new Translation2d(-0.025, 0.025), new Translation2d(-0.02, 0.02)),
         new Pose2d(0, 0, new Rotation2d(0)),
         config);
 
