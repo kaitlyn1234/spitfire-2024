@@ -224,11 +224,11 @@ public class RobotContainer {
     Trajectory secondNoteTrajectory = TrajectoryGenerator.generateTrajectory(
         new Pose2d(0, 0, new Rotation2d(0)),
         List.of(new Translation2d(-0.02, 0.02), new Translation2d(-0.025, 0.025)),
-        new Pose2d(-0.03, 0.03, new Rotation2d(-0.75)),
+        new Pose2d(-0.03, 0.03, new Rotation2d(-0.8)),
         config);
-
+//source blue blue
     Trajectory thirdNoteTrajectory = TrajectoryGenerator.generateTrajectory(
-        new Pose2d(-0.03, 0.03, new Rotation2d(-0.75)),
+        new Pose2d(-0.03, 0.03, new Rotation2d(-0.8)),
         List.of(new Translation2d(-0.025, 0.025), new Translation2d(-0.02, 0.02)),
         new Pose2d(0, 0, new Rotation2d(0)),
         config);
@@ -520,5 +520,56 @@ public class RobotContainer {
         m_robotDrive);
 
     return swerveControllerCommand.andThen(swerveControllerCommand2.andThen(swerveControllerCommand3.andThen(swerveControllerCommand4.andThen((swerveControllerCommand5.andThen(swerveControllerCommand6.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false))))))));
+  }
+
+  public Command testAutoCommand6() {
+    TrajectoryConfig config = new TrajectoryConfig(
+        AutoConstants.kMaxSpeedMetersPerSecond,
+        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        .setKinematics(DriveConstants.kDriveKinematics);
+
+    Trajectory secondNoteTrajectory = TrajectoryGenerator.generateTrajectory(
+        new Pose2d(0, 0, new Rotation2d(0)),
+        List.of(new Translation2d(-0.02, 0.02), new Translation2d(-0.025, 0.025)),
+        new Pose2d(-0.03, 0.03, new Rotation2d(0.8)),
+        config);
+//source blue blue
+    Trajectory thirdNoteTrajectory = TrajectoryGenerator.generateTrajectory(
+        new Pose2d(-0.03, 0.03, new Rotation2d(0.8)),
+        List.of(new Translation2d(-0.025, 0.025), new Translation2d(-0.02, 0.02)),
+        new Pose2d(0, 0, new Rotation2d(0)),
+        config);
+
+    
+    var thetaController = new ProfiledPIDController(
+        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI); 
+
+    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+        secondNoteTrajectory,
+        m_robotDrive::getPose,
+        DriveConstants.kDriveKinematics,
+
+
+        // Position controllers
+        new PIDController(AutoConstants.kPXController, 0, 0),
+        new PIDController(AutoConstants.kPYController, 0, 0),
+        thetaController,
+        m_robotDrive::setModuleStates,
+        m_robotDrive);
+
+
+    SwerveControllerCommand swerveControllerCommand2 = new SwerveControllerCommand(
+        thirdNoteTrajectory,
+        m_robotDrive::getPose, 
+        DriveConstants.kDriveKinematics,
+
+        new PIDController(AutoConstants.kPXController, 0, 0),
+        new PIDController(AutoConstants.kPYController, 0, 0),
+        thetaController,
+        m_robotDrive::setModuleStates,
+        m_robotDrive);
+
+    return swerveControllerCommand.andThen(swerveControllerCommand2.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false)));
   }
 }
