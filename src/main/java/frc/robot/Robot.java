@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.AnalogTrigger;
+import edu.wpi.first.wpilibj.DigitalInput;
 //import com.revrobotics.blinkin;
 import edu.wpi.first.wpilibj.Joystick;
 import com.revrobotics.CANSparkMax;
@@ -51,6 +53,7 @@ public class Robot extends TimedRobot {
 	public class Blinkin {
 
   Joystick driverController = new Joystick(0);
+
 public void teleopPeriodic() {
 
 
@@ -76,6 +79,7 @@ public void teleopPeriodic() {
   CANSparkMax liftyLeft = new CANSparkMax(17, MotorType.kBrushless);
   CANSparkMax liftyRight = new CANSparkMax(16, MotorType.kBrushless);
 
+
   private static final String kDefaultAuto = "2 Note Auto Center";
   private static final String kCustomAuto = "Shoot one (Blue source, Red Amp)";
   private static final String kCustomAuto2 = "3 Note Auto";
@@ -90,6 +94,7 @@ public void teleopPeriodic() {
   double intake_joystick_speed =  0.01;
   enum SystemState { UserControl, Handoff1, Handoff2, Handoff3 };
 
+
  SystemState system_state = SystemState.UserControl;
 
  SlewRateLimiter shooter_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
@@ -97,7 +102,6 @@ public void teleopPeriodic() {
 
  PIDController shooter_pos_pid = new PIDController(2.5, 0.0, 0.0);
  PIDController intake_pos_pid = new PIDController(2.5, 0.0, 0.0);
-
 
   double intake_setpoint_lower_limit = 0.479;
   double intake_setpoint_upper_limit = 0.948;
@@ -107,6 +111,8 @@ public void teleopPeriodic() {
 
   public double intake_setpoint = 0;
   public double shooter_setpoint = 0;
+
+  DigitalInput limitSwitch = new DigitalInput(0);
 
   public Timer autonomy_timer = new Timer();
   private Command m_autonomousCommand;
@@ -255,7 +261,6 @@ public void teleopPeriodic() {
     SmartDashboard.putNumber("intake encoder", getIntakeAngle());
     SmartDashboard.putNumber("intake setpoint", intake_setpoint);
     SmartDashboard.putNumber("shooter setpoint", shooter_setpoint);
-
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -670,13 +675,18 @@ public void teleopPeriodic() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
     homeSetpoints();
+
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
 
+    while (limitSwitch.get() == true) {
+      intakeAxles.set(1);
+    }
 
     blinkin.set(0.57);
 
@@ -691,7 +701,6 @@ public void teleopPeriodic() {
     clampSetpoints();
     controlIntake();
     controlShooter();
-
 
     //SHOOTER WHEELS
     double right_trigger = stick.getRawAxis(3);
