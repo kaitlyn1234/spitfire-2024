@@ -684,9 +684,18 @@ public void teleopPeriodic() {
   @Override
   public void teleopPeriodic() {
 
-    while (limitSwitch.get() == true) {
-      intakeAxles.set(1);
-    }
+
+    /* Do NOT run unless object detected
+     *
+     * This is counterintuitive (LOL) but axles would run 
+     * constantly otherwise and thats lowkey inconvenient
+     * 
+     */
+
+    /*  while (limitSwitch.get() == false) {
+          intakeAxles.set(1);
+        }
+    */
 
     blinkin.set(0.57);
 
@@ -721,6 +730,7 @@ public void teleopPeriodic() {
       rightShooterWheel.set(0);
       leftShooterWheel.set(0);
       }
+    
     //INTAKE AXLE
     if (stick.getRawButton(5)) {
     //NOTE in
@@ -732,9 +742,16 @@ public void teleopPeriodic() {
       intakeAxles.set(-1);
       secondIntakeAxles.set(1);
     }
+    // Limit Switch Hard Stop. Intake UNTIL limit switch detects object
+    // HAVEN'T TESTED THIS YET NO IDEA IF IT WORKS
+    else if (stick.getRawButton(5) && limitSwitch.get() == false) {
+      intakeAxles.set(0);
+      rightShooterBelt.set(0);
+      leftShooterBelt.set(0);
+    }
+
     else {
       //STOP
-      intakeAxles.set(0);
       secondIntakeAxles.set(0);
       rightShooterBelt.set(0);
       leftShooterBelt.set(0);
@@ -778,11 +795,6 @@ public void teleopPeriodic() {
       liftyRight.set(0);
     }
   }
-
-
-
-  
-    
   
   @Override
   public void testInit() {
