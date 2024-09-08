@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.MjpegServer;
@@ -109,6 +110,8 @@ public void teleopPeriodic() {
   double shooter_setpoint_lower_limit = 0.487;
   double shooter_setpoint_upper_limit = 0.99;
 
+  public static double funVariable = 4;
+
   public double intake_setpoint = 0;
   public double shooter_setpoint = 0;
 
@@ -164,6 +167,10 @@ public void teleopPeriodic() {
     m_robotContainer = new RobotContainer();
 
     homeSetpoints();
+  }
+
+  public void resetLimitSwitch() {
+    limitSwitch.get();
   }
 
   public void homeSetpoints() {
@@ -731,31 +738,40 @@ public void teleopPeriodic() {
       leftShooterWheel.set(0);
       }
     
+
     //INTAKE AXLE
-    if (stick.getRawButton(5)) {
-    //NOTE in
-      intakeAxles.set(1);
-      secondIntakeAxles.set(-1);
-    }
-    else if (stick.getRawButton(6)) {
+    if (stick.getRawButton(6)) {      
     //NOTE out
+
       intakeAxles.set(-1);
       secondIntakeAxles.set(1);
     }
-    // Limit Switch Hard Stop. Intake UNTIL limit switch detects object
-    // HAVEN'T TESTED THIS YET NO IDEA IF IT WORKS
-    else if (stick.getRawButton(5) && limitSwitch.get() == false) {
-      intakeAxles.set(0);
-      rightShooterBelt.set(0);
-      leftShooterBelt.set(0);
+    else if (stick.getRawButton(5)) {
+    //NOTE in
+      intakeAxles.set(1);
+      secondIntakeAxles.set(-1);
+
+      if (limitSwitch.get() == false) {
+        intakeAxles.set(0);
+      }
     }
 
     else {
-      //STOP
+      intakeAxles.set(0);
       secondIntakeAxles.set(0);
-      rightShooterBelt.set(0);
-      leftShooterBelt.set(0);
     }
+
+    // Limit Switch Hard Stop. Intake UNTIL limit switch detects object
+    // HAVEN'T TESTED THIS YET NO IDEA IF IT WORKS :
+
+    /*
+    else if (stick.getRawButton(5) && limitSwitch.get() == false) {
+      intakeAxles.set(0);
+      secondIntakeAxles.set(0);
+    } 
+    */
+    
+
     
     //SHOOTER BELT IN
     if (stick.getRawButton(2)){
