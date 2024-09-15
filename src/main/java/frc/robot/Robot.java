@@ -34,6 +34,9 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.cscore.CvSink;
@@ -51,19 +54,60 @@ import edu.wpi.first.cscore.MjpegServer;
  */
 public class Robot extends TimedRobot {
 	
-	public class Blinkin {
+public class Blinkin {
 
   Joystick driverController = new Joystick(0);
 
 public void teleopPeriodic() {
-
-
-}
+          // Retrieve Limelight values
+          double tx = limelightTable.getEntry("tx").getDouble(0.0); // Horizontal offset from crosshair to target
+          double ty = limelightTable.getEntry("ty").getDouble(0.0); // Vertical offset from crosshair to target
+          double ta = limelightTable.getEntry("ta").getDouble(0.0); // Target area (percentage of image)
+          double tv = limelightTable.getEntry("tv").getDouble(0.0); // Target validity (1 if target detected, 0 otherwise)
+  
+          // Retrieve AprilTag values
+          double tid = limelightTable.getEntry("tid").getDouble(-1); // AprilTag ID, -1 if no tag is detected
+          double[] defaultPose = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // Default values if no pose data is found
+          double[] botPose = limelightTable.getEntry("botpose").getDoubleArray(defaultPose); // Robot pose relative to field based on detected tag
+  
+          // Display Limelight values on the SmartDashboard
+          SmartDashboard.putNumber("LimelightX", tx);
+          SmartDashboard.putNumber("LimelightY", ty);
+          SmartDashboard.putNumber("LimelightArea", tid);
+          SmartDashboard.putNumber ("April Tag Detected", tid);
+          // Check if the detected tag is specifically ID 4
+          if (tid == 4) {
+              // Display AprilTag ID and pose information on the SmartDashboard for ID 4
+              SmartDashboard.putNumber("Detected AprilTag ID", tid);
+              double x = botPose[0]; // X position relative to the tag
+              double y = botPose[1]; // Y position relative to the tag
+              double z = botPose[2]; // Z position (distance) relative to the tag
+              double roll = botPose[3]; // Rotation around X-axis
+              double pitch = botPose[4]; // Rotation around Y-axis
+              double yaw = botPose[5]; // Rotation around Z-axis
+  
+              // Display detailed pose information for AprilTag ID 4
+              SmartDashboard.putNumber("Tag 4 X", x);
+              SmartDashboard.putNumber("Tag 4 Y", y);
+              SmartDashboard.putNumber("Tag 4 Z", z);
+              SmartDashboard.putNumber("Tag 4 Roll", roll);
+              SmartDashboard.putNumber("Tag 4 Pitch", pitch);
+              SmartDashboard.putNumber("Tag 4 Yaw", yaw);
+              SmartDashboard.putString("Tag 4 Status", "Detected");
+  
+              // Implement control logic when AprilTag ID 4 is detected, such as alignment or positioning.
+          }
+      }
+  
+  }
 	/**
 	 * if the robot is not in hatMode and in normal drive, the LED turns solid white (0.93)
 	 */
 
-	}
+	
+
+  // Limelight network table
+  private NetworkTable limelightTable;
 
   Joystick stick = new Joystick(2);
   Joystick driverController = new Joystick(1);
@@ -115,6 +159,12 @@ public void teleopPeriodic() {
   public double intake_setpoint = 0;
   public double shooter_setpoint = 0;
 
+
+  public double tx;
+  public double ty;
+  public double ta;
+  public double tv;
+
   DigitalInput limitSwitch = new DigitalInput(0);
 
   public Timer autonomy_timer = new Timer();
@@ -124,6 +174,7 @@ public void teleopPeriodic() {
 
   @Override
   public void robotInit() {
+
     SmartDashboard.putData("Auto Choices", m_chooser);
     m_chooser.setDefaultOption("2 Note Auto Center", kDefaultAuto);
     m_chooser.addOption("Shoot one (Blue source, Red Amp)", kCustomAuto);
@@ -131,8 +182,11 @@ public void teleopPeriodic() {
     m_chooser.addOption("Leave & Return Starting Zone", kCustomAuto3);
     m_chooser.addOption("4 Note Auto", kCustomAuto4);
     m_chooser.addOption("Shoot one (Blue Amp, Red Source)", kCustomAuto5);
-
     CameraServer.startAutomaticCapture();
+
+    // Initialize the Limelight network table
+    limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+
    /*
     UsbCamera usbCamera0 = new UsbCamera("Camera 0", 0);
     UsbCamera usbCamera1 = new UsbCamera("Camera 1", 1);
@@ -189,6 +243,8 @@ public void teleopPeriodic() {
       }
       return pos;
   }
+  
+
 
   public double getIntakeAngle() {
     return intakePivot.getAbsoluteEncoder(Type.kDutyCycle).getPosition();
@@ -268,6 +324,9 @@ public void teleopPeriodic() {
     SmartDashboard.putNumber("intake encoder", getIntakeAngle());
     SmartDashboard.putNumber("intake setpoint", intake_setpoint);
     SmartDashboard.putNumber("shooter setpoint", shooter_setpoint);
+    SmartDashboard.putNumber("LimelightX", tx);
+    SmartDashboard.putNumber("LimelightY", ty);
+    SmartDashboard.putNumber("LimelightArea", ta);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -691,7 +750,20 @@ public void teleopPeriodic() {
   @Override
   public void teleopPeriodic() {
 
+    // Display values on the SmartDashboard for debugging
+    SmartDashboard.putNumber("LimelightX", tx);
+    SmartDashboard.putNumber("LimelightY", ty);
+    SmartDashboard.putNumber("LimelightArea", ta);
+    SmartDashboard.putBoolean("TargetVisible", tv == 1.0);
 
+    tx = limelightTable.getEntry("tx").getDouble(0.0); // Horizontal offset from crosshair to target
+    ty = limelightTable.getEntry("ty").getDouble(0.0); // Vertical offset from crosshair to target
+    ta = limelightTable.getEntry("ta").getDouble(0.0); // Target area
+    tv = limelightTable.getEntry("tv").getDouble(0.0); // Target validity
+
+
+
+    // Check if Limelight sees a valid target
     /* Do NOT run unless object detected
      *
      * This is counterintuitive (LOL) but axles would run 
