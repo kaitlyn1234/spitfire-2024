@@ -744,12 +744,12 @@ public void teleopPeriodic() {
     //NOTE out
 
       intakeAxles.set(-1);
-      secondIntakeAxles.set(1);
+      secondIntakeAxles.set(0);
     }
     else if (stick.getRawButton(5)) {
     //NOTE in
       intakeAxles.set(1);
-      secondIntakeAxles.set(-1);
+      secondIntakeAxles.set(0);
 
       if (limitSwitch.get() == false) {
         intakeAxles.set(0);
