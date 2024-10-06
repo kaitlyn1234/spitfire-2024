@@ -242,12 +242,12 @@ public void teleopPeriodic() {
     }
     else if (stick.getRawButton(3)) {
       //speaker scoring/ handoff
-      intake_setpoint = 0.481;
-      shooter_setpoint = 0.86;//.87
+      intake_setpoint = 0.477;
+      shooter_setpoint = 0.883;//.87
     }
     else if (stick.getRawButton(1)) {
       //intaking
-      intake_setpoint = 0.923; //933
+      intake_setpoint = 0.8995; //933
     }
     else if (stick.getRawButton(8)) {
       //speaker scoring/ handoff
@@ -743,16 +743,17 @@ public void teleopPeriodic() {
     if (stick.getRawButton(6)) {      
     //NOTE out
 
-      intakeAxles.set(-1);
-      secondIntakeAxles.set(0);
+      intakeAxles.set(-0.5);//-1
+      secondIntakeAxles.set(0.5);
     }
     else if (stick.getRawButton(5)) {
     //NOTE in
-      intakeAxles.set(1);
-      secondIntakeAxles.set(0);
+      intakeAxles.set(0.5);//1
+      secondIntakeAxles.set(-0.5);
 
       if (limitSwitch.get() == false) {
         intakeAxles.set(0);
+        secondIntakeAxles.set(0);
       }
     }
 
