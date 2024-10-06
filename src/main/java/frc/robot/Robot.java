@@ -341,7 +341,7 @@ public void teleopPeriodic() {
           rightShooterWheel.set(0);
         }
          else if (autonomy_timer.hasElapsed(13)) {
-         intake_setpoint = 0.924;
+         intake_setpoint = 0.8995;
         }
 
        else if (autonomy_timer.hasElapsed(6.5)) {
@@ -359,7 +359,7 @@ public void teleopPeriodic() {
         else if (autonomy_timer.hasElapsed(5)) {
           leftShooterWheel.set(-.60);
           rightShooterWheel.set(.60);
-          intake_setpoint = 0.481;
+          intake_setpoint = 0.477;
           //4.25
         }
         else if (autonomy_timer.hasElapsed(4.1)) {//3.25
@@ -382,7 +382,7 @@ public void teleopPeriodic() {
           shooter_setpoint = 0.878;
           leftShooterWheel.set(-.60);
           rightShooterWheel.set(.60);
-          intake_setpoint = 0.924; //.93 
+          intake_setpoint = 0.8995; //.93 
 
         }
 
@@ -431,7 +431,7 @@ public void teleopPeriodic() {
         else if (autonomy_timer.hasElapsed(13)) {
           intakeAxles.set(0);
           secondIntakeAxles.set(0);
-          intake_setpoint = 0.933;
+          intake_setpoint = 0.8995;
         }
 
         else if (autonomy_timer.hasElapsed(11)) {
@@ -451,7 +451,7 @@ public void teleopPeriodic() {
           
         else if (autonomy_timer.hasElapsed(8.6)) {
           shooter_setpoint = .878;
-          intake_setpoint = 0.481;
+          intake_setpoint = 0.477;
           intakeAxles.set(0);
            //.93 
         }
@@ -469,7 +469,7 @@ public void teleopPeriodic() {
         }
 
         else if (autonomy_timer.hasElapsed(6)) {
-          intake_setpoint = 0.933;
+          intake_setpoint = 0.8995;
         }
         else if (autonomy_timer.hasElapsed(4.25)) {
          intakeAxles.set(-1);
@@ -493,7 +493,7 @@ public void teleopPeriodic() {
 
         else if (autonomy_timer.hasElapsed(3)) {
          shooter_setpoint = 0.880;
-         intake_setpoint = 0.481;
+         intake_setpoint = 0.477;
  
         }
 
@@ -515,7 +515,7 @@ public void teleopPeriodic() {
           shooter_setpoint = 0.85;
           leftShooterWheel.set(-.95);
           rightShooterWheel.set(.95);
-          intake_setpoint = 0.933; //.924
+          intake_setpoint = 0.8995; //.8995
         }
 
         clampSetpoints();
@@ -555,7 +555,7 @@ public void teleopPeriodic() {
 
         else if (autonomy_timer.hasElapsed(12.5)) {
          shooter_setpoint = 0.88;
-         intake_setpoint = 0.481;
+         intake_setpoint = 0.477;
          intakeAxles.set(0);
          leftShooterWheel.set(-.85);
          rightShooterWheel.set(.85);
@@ -563,7 +563,7 @@ public void teleopPeriodic() {
 
         else if (autonomy_timer.hasElapsed(9.5)){
           intakeAxles.set(1);
-          intake_setpoint = 0.933;  
+          intake_setpoint = 0.8995;  
         }
 
         else if (autonomy_timer.hasElapsed(8.8)) {
@@ -580,7 +580,7 @@ public void teleopPeriodic() {
 
         else if (autonomy_timer.hasElapsed(7.9)) {
          shooter_setpoint = 0.88;
-         intake_setpoint = 0.481;
+         intake_setpoint = 0.477;
         }
 
         else if (autonomy_timer.hasElapsed(7)) {
@@ -599,7 +599,7 @@ public void teleopPeriodic() {
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0); 
-          intake_setpoint = 0.933;
+          intake_setpoint = 0.8995;
  
         }
 
@@ -616,7 +616,7 @@ public void teleopPeriodic() {
 
         else if (autonomy_timer.hasElapsed(3)) {
          shooter_setpoint = 0.88;
-         intake_setpoint = 0.481;
+         intake_setpoint = 0.477;
          intakeAxles.set(0);
         }
 
@@ -638,7 +638,7 @@ public void teleopPeriodic() {
           shooter_setpoint = 0.88;
           leftShooterWheel.set(-.85);
           rightShooterWheel.set(.85);
-          intake_setpoint = 0.933; //.924
+          intake_setpoint = 0.8995; //.8995
         }
 
         clampSetpoints();
