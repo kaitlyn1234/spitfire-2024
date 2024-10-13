@@ -169,10 +169,6 @@ public void teleopPeriodic() {
     homeSetpoints();
   }
 
-  public void resetLimitSwitch() {
-    limitSwitch.get();
-  }
-
   public void homeSetpoints() {
     shooter_setpoint = getShooterFeedback();
     intake_setpoint = getIntakeFeedback();
@@ -332,6 +328,7 @@ public void teleopPeriodic() {
     switch (m_autoSelected) {
       //2notecenter
       case kDefaultAuto:
+
        if (autonomy_timer.hasElapsed(15)) {
           intakeAxles.set(0);
           secondIntakeAxles.set(0);
@@ -365,6 +362,7 @@ public void teleopPeriodic() {
         else if (autonomy_timer.hasElapsed(4.1)) {//3.25
           intakeAxles.set(0);
           secondIntakeAxles.set(0);
+          
         }
         else if (autonomy_timer.hasElapsed(3)) {
           leftShooterWheel.set(0);
@@ -377,6 +375,11 @@ public void teleopPeriodic() {
           rightShooterBelt.set(.60);
           intakeAxles.set(1);
           secondIntakeAxles.set(-1);
+
+          if (limitSwitch.get() == false) {
+            intakeAxles.set(0);
+            secondIntakeAxles.set(0);
+          }
         }
         else if (autonomy_timer.hasElapsed(.01)) {
           shooter_setpoint = 0.878;
