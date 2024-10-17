@@ -358,23 +358,29 @@ public void teleopPeriodic() {
           rightShooterWheel.set(.60);
           intake_setpoint = 0.477;
           //4.25
+          if (limitSwitch.get() == false) {
+            intakeAxles.set(0);
+            secondIntakeAxles.set(0);
+          }
         }
-        else if (autonomy_timer.hasElapsed(4.1)) {//3.25
-          intakeAxles.set(0);
-          secondIntakeAxles.set(0);
-          
-        }
+      
         else if (autonomy_timer.hasElapsed(3)) {
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
+          
+          if (limitSwitch.get() == false) {
+            intakeAxles.set(0);
+            secondIntakeAxles.set(0);
+          }
         }
+        
         else if (autonomy_timer.hasElapsed(1.5)) {
           leftShooterBelt.set(-.60);
           rightShooterBelt.set(.60);
-          intakeAxles.set(1);
-          secondIntakeAxles.set(-1);
+          intakeAxles.set(0.5);
+          secondIntakeAxles.set(-0.5);
 
           if (limitSwitch.get() == false) {
             intakeAxles.set(0);
