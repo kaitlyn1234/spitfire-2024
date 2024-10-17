@@ -243,7 +243,7 @@ public void teleopPeriodic() {
     }
     else if (stick.getRawButton(1)) {
       //intaking
-      intake_setpoint = 0.8995; //933
+      intake_setpoint = 0.877; //933
     }
     else if (stick.getRawButton(8)) {
       //speaker scoring/ handoff
@@ -338,7 +338,7 @@ public void teleopPeriodic() {
           rightShooterWheel.set(0);
         }
          else if (autonomy_timer.hasElapsed(13)) {
-         intake_setpoint = 0.8995;
+         intake_setpoint = 0.877;
         }
 
        else if (autonomy_timer.hasElapsed(6.5)) {
@@ -391,7 +391,7 @@ public void teleopPeriodic() {
           shooter_setpoint = 0.878;
           leftShooterWheel.set(-.60);
           rightShooterWheel.set(.60);
-          intake_setpoint = 0.8995; //.93 
+          intake_setpoint = 0.877; //.93 
 
         }
 
@@ -440,7 +440,7 @@ public void teleopPeriodic() {
         else if (autonomy_timer.hasElapsed(13)) {
           intakeAxles.set(0);
           secondIntakeAxles.set(0);
-          intake_setpoint = 0.8995;
+          intake_setpoint = 0.877;
         }
 
         else if (autonomy_timer.hasElapsed(11)) {
@@ -478,7 +478,7 @@ public void teleopPeriodic() {
         }
 
         else if (autonomy_timer.hasElapsed(6)) {
-          intake_setpoint = 0.8995;
+          intake_setpoint = 0.877;
         }
         else if (autonomy_timer.hasElapsed(4.25)) {
          intakeAxles.set(-1);
@@ -524,7 +524,7 @@ public void teleopPeriodic() {
           shooter_setpoint = 0.85;
           leftShooterWheel.set(-.95);
           rightShooterWheel.set(.95);
-          intake_setpoint = 0.8995; //.8995
+          intake_setpoint = 0.877; //.8995
         }
 
         clampSetpoints();
