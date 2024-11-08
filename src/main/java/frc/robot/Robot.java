@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.LimelightSubsystem;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.DigitalInput;
 //import com.revrobotics.blinkin;
@@ -703,6 +704,9 @@ public void teleopPeriodic() {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
+    LimelightSubsystem lime = new LimelightSubsystem();
+    SmartDashboard.putNumber("get X", lime.getX());
 
 
     /* Do NOT run unless object detected
