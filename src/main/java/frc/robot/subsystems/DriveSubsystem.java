@@ -25,7 +25,11 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 
+import frc.robot.subsystems.LimelightSubsystem;
+
 public class DriveSubsystem extends SubsystemBase {
+
+  private final LimelightSubsystem lime = new LimelightSubsystem();
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
@@ -263,6 +267,14 @@ public class DriveSubsystem extends SubsystemBase {
   public void zeroHeading() {
     m_gyro.reset();
     ahrs.reset();
+  }
+
+  public void alignToTarget() {
+    drive(0, 0, lime.getX(), lime.hasValidTarget(), lime.hasValidTarget());
+  }
+
+  public void chill() {
+    drive(0, 0, 0, false, false);
   }
 
   /**
