@@ -665,7 +665,11 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    
+    LimelightSubsystem lime = new LimelightSubsystem();
+
+    while (lime.hasValidTarget()){
+      m_robotContainer.run();
+    }
     // this causes a fatal error, but why?
    /* while (lime.hasValidTarget()) {
       drive.drive(0, 0, lime.getX(), lime.hasValidTarget(), lime.hasValidTarget());

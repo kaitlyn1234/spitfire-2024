@@ -271,7 +271,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void alignToTarget() {
-    drive(0, 0, lime.getX(), true, true);
+    drive(0, 0, -lime.getX()*0.01, true, true);
   }
 
   public void chill() {
