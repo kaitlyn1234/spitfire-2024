@@ -49,9 +49,7 @@ import edu.wpi.first.cscore.MjpegServer;
  * project.
  */
 public class Robot extends TimedRobot {
- 
-  private DriveSubsystem drive;
-  private LimelightSubsystem lime;
+
 	
   Joystick driverController = new Joystick(0);
   Joystick stick = new Joystick(2);
@@ -75,6 +73,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto3 = "Leave & Return Starting Zone";
   private static final String kCustomAuto4 = "4 Note Auto";
   private static final String kCustomAuto5 = "Shoot one (Blue Amp, Red Source)";
+  private static final String kCustomAuto6 = "Limelight Test";
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser <>();
@@ -111,8 +110,6 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 
     // Initialize Drive & Limelight Subsystems
-    drive = new DriveSubsystem();
-    lime = new LimelightSubsystem();
 
     // Put Auto Choices on Shuffleboard/Smart Dashboard
     SmartDashboard.putData("Auto Choices", m_chooser);
@@ -122,6 +119,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Leave & Return Starting Zone", kCustomAuto3);
     m_chooser.addOption("4 Note Auto", kCustomAuto4);
     m_chooser.addOption("Shoot one (Blue Amp, Red Source)", kCustomAuto5);
+    m_chooser.addOption("Limelight Test", kCustomAuto6);
 
     CameraServer.startAutomaticCapture();
    /*
@@ -289,9 +287,18 @@ public class Robot extends TimedRobot {
         case kCustomAuto4:
         m_autonomousCommand = m_robotContainer.testAutoCommand5();
         break;
+
+        //???
         case kCustomAuto5:
         m_autonomousCommand = m_robotContainer.testAutoCommand6();
         break;
+
+        //limelight 
+        /*
+        case kCustomAuto6:
+        m_autonomousCommand = m_robotContainer.testAutoCommand7();
+        break; */
+        
       }
         
     // schedule the autonomous command (example)
@@ -491,12 +498,10 @@ public class Robot extends TimedRobot {
         if (autonomy_timer.hasElapsed(2)){
         intakeAxles.set(0);
         }
-
         clampSetpoints();
         controlIntake();
         controlShooter();
         break;
-      
       //4note
       case kCustomAuto4:
           blinkin.set(-0.67);
@@ -634,7 +639,17 @@ public class Robot extends TimedRobot {
         controlIntake();
         controlShooter();
         break;
+
+
+        case kCustomAuto6:
+  
+
+        clampSetpoints();
+        controlIntake();
+        controlShooter();
+        break;
     }
+    
   }
   
   @Override
@@ -650,13 +665,13 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
+    
     // this causes a fatal error, but why?
-    while (lime.hasValidTarget()) {
+   /* while (lime.hasValidTarget()) {
       drive.drive(0, 0, lime.getX(), lime.hasValidTarget(), lime.hasValidTarget());
     }
-
-    SmartDashboard.putNumber("get X", lime.getX());
+*/
+    // SmartDashboard.putNumber("get X", lime.getX());
 
     /* Do NOT run unless object detected
      *

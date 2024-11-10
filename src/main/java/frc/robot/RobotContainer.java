@@ -19,6 +19,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -39,6 +40,8 @@ public class RobotContainer {
   
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+
+  private final LimelightSubsystem lime = new LimelightSubsystem();
 
  // private final DriveSubsystem m_robotDrive2 = new DriveSubsystem();
 
@@ -519,6 +522,9 @@ public class RobotContainer {
         m_robotDrive::setModuleStates,
         m_robotDrive);
 
+    
+
+
     return swerveControllerCommand.andThen(swerveControllerCommand2.andThen(swerveControllerCommand3.andThen(swerveControllerCommand4.andThen((swerveControllerCommand5.andThen(swerveControllerCommand6.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false))))))));
   }
 
@@ -572,4 +578,32 @@ public class RobotContainer {
 
     return swerveControllerCommand.andThen(swerveControllerCommand2.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false)));
   }
+
+  public void run() {
+    m_robotDrive.alignToTarget();
+  }
+
+  /*
+  // Limelight stuff
+  public Command testAutoCommand7() {
+    var thetaController = new ProfiledPIDController(
+        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI); 
+
+    Rotation2d rotate = new Rotation2d(lime.getX());
+
+    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+        Rotation2d(lime.getX()),
+        m_robotDrive::getPose,
+        DriveConstants.kDriveKinematics,
+
+        // Position controllers
+        new PIDController(AutoConstants.kPXController, 0, 0),
+        new PIDController(AutoConstants.kPYController, 0, 0),
+        thetaController,
+        m_robotDrive::setModuleStates,
+        m_robotDrive);
+
+    return swerveControllerCommand;
+  }*/
 }
