@@ -42,9 +42,6 @@ import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.MjpegServer;
 
-
-
-
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -53,23 +50,12 @@ import edu.wpi.first.cscore.MjpegServer;
  */
 public class Robot extends TimedRobot {
  
+  private DriveSubsystem drive;
+  private LimelightSubsystem lime;
 	
-	public class Blinkin {
-
   Joystick driverController = new Joystick(0);
-
-public void teleopPeriodic() {
-
-
-}
-	/**
-	 * if the robot is not in hatMode and in normal drive, the LED turns solid white (0.93)
-	 */
-
-	}
-
   Joystick stick = new Joystick(2);
-  Joystick driverController = new Joystick(1);
+
   Spark blinkin = new Spark(0);
   
   CANSparkMax shooterPivot = new CANSparkMax(9, MotorType.kBrushless);
@@ -82,7 +68,6 @@ public void teleopPeriodic() {
   CANSparkMax leftShooterWheel = new CANSparkMax(15, MotorType.kBrushless);
   CANSparkMax liftyLeft = new CANSparkMax(17, MotorType.kBrushless);
   CANSparkMax liftyRight = new CANSparkMax(16, MotorType.kBrushless);
-
 
   private static final String kDefaultAuto = "2 Note Auto Center";
   private static final String kCustomAuto = "Shoot one (Blue source, Red Amp)";
@@ -98,14 +83,13 @@ public void teleopPeriodic() {
   double intake_joystick_speed =  0.01;
   enum SystemState { UserControl, Handoff1, Handoff2, Handoff3 };
 
+  SystemState system_state = SystemState.UserControl;
 
- SystemState system_state = SystemState.UserControl;
+  SlewRateLimiter shooter_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
+  SlewRateLimiter intake_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
 
- SlewRateLimiter shooter_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
- SlewRateLimiter intake_rate_limiter = new SlewRateLimiter(1); // 90 deg per second
-
- PIDController shooter_pos_pid = new PIDController(2.5, 0.0, 0.0);
- PIDController intake_pos_pid = new PIDController(2.5, 0.0, 0.0);
+  PIDController shooter_pos_pid = new PIDController(2.5, 0.0, 0.0);
+  PIDController intake_pos_pid = new PIDController(2.5, 0.0, 0.0);
 
   double intake_setpoint_lower_limit = 0.479;
   double intake_setpoint_upper_limit = 0.97;
@@ -114,7 +98,6 @@ public void teleopPeriodic() {
   double shooter_setpoint_upper_limit = 0.99;
 
   public static double funVariable = 4;
-
   public double intake_setpoint = 0;
   public double shooter_setpoint = 0;
 
@@ -126,6 +109,12 @@ public void teleopPeriodic() {
 
   @Override
   public void robotInit() {
+
+    // Initialize Drive & Limelight Subsystems
+    drive = new DriveSubsystem();
+    lime = new LimelightSubsystem();
+
+    // Put Auto Choices on Shuffleboard/Smart Dashboard
     SmartDashboard.putData("Auto Choices", m_chooser);
     m_chooser.setDefaultOption("2 Note Auto Center", kDefaultAuto);
     m_chooser.addOption("Shoot one (Blue source, Red Amp)", kCustomAuto);
@@ -160,12 +149,8 @@ public void teleopPeriodic() {
     mjpegServer2.setSource(outputStream0);
     mjpegServer3.setSource(outputStream1);
     */
-
-
     m_autoSelected = m_chooser.getSelected();
     m_robotContainer = new RobotContainer();
-
-
     homeSetpoints();
   }
 
@@ -251,7 +236,6 @@ public void teleopPeriodic() {
     }
   }
   
-  // The final handoff state should return the system state to user control
   @Override
   public void robotPeriodic() {
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
@@ -266,16 +250,11 @@ public void teleopPeriodic() {
     SmartDashboard.putNumber("shooter setpoint", shooter_setpoint);
   }
 
-  /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {
-   
-  }
+  public void disabledInit() { }
 
   @Override
-  public void disabledPeriodic() {
-
-  }
+  public void disabledPeriodic() { }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -340,23 +319,16 @@ public void teleopPeriodic() {
          else if (autonomy_timer.hasElapsed(13)) {
          intake_setpoint = 0.942;
         }
-
-
           else if(autonomy_timer.hasElapsed(7)) {
           intakeAxles.set(-1);
           secondIntakeAxles.set(1);
           shooter_setpoint = 0.88;
         }
-
-        
        else if (autonomy_timer.hasElapsed(6.5)) {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
           shooter_setpoint = 0.88;
         }
-        
-        
-
         else if (autonomy_timer.hasElapsed(5)) {
           leftShooterWheel.set(-.60);
           rightShooterWheel.set(.60);
@@ -373,13 +345,12 @@ public void teleopPeriodic() {
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
-          
+        
           if (limitSwitch.get() == false) {
             intakeAxles.set(0);
             secondIntakeAxles.set(0);
           }
         }
-        
         else if (autonomy_timer.hasElapsed(1.5)) {
           leftShooterBelt.set(-.60);
           rightShooterBelt.set(.60);
@@ -396,9 +367,7 @@ public void teleopPeriodic() {
           leftShooterWheel.set(-.60);
           rightShooterWheel.set(.60);
           intake_setpoint = 0.932; //.93 
-
         }
-
         clampSetpoints();
         controlIntake();
         controlShooter();
@@ -423,7 +392,6 @@ public void teleopPeriodic() {
           leftShooterWheel.set(-.90);
           rightShooterWheel.set(.90);
           intake_setpoint = 0.7; //.93 
-
         }
         clampSetpoints();
         controlIntake();
@@ -440,47 +408,38 @@ public void teleopPeriodic() {
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
         }
-
         else if (autonomy_timer.hasElapsed(13)) {
           intakeAxles.set(0);
           secondIntakeAxles.set(0);
           intake_setpoint = 0.877;
         }
-
         else if (autonomy_timer.hasElapsed(11)) {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
           shooter_setpoint = 0.874;
         }
-
         else if (autonomy_timer.hasElapsed(10)) {
           leftShooterWheel.set(-.90);
           rightShooterWheel.set(.90);
            intakeAxles.set(-1);
            secondIntakeAxles.set(1);
-          
         }
-
-          
         else if (autonomy_timer.hasElapsed(8.6)) {
           shooter_setpoint = .878;
           intake_setpoint = 0.477;
           intakeAxles.set(0);
            //.93 
         }
-
        else if (autonomy_timer.hasElapsed(8)) {
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
         }
-
       else if (autonomy_timer.hasElapsed(7)) {
           intakeAxles.set(1);
           secondIntakeAxles.set(-1);
         }
-
         else if (autonomy_timer.hasElapsed(6)) {
           intake_setpoint = 0.877;
         }
@@ -491,46 +450,38 @@ public void teleopPeriodic() {
        else if (autonomy_timer.hasElapsed(4)) {
           shooter_setpoint = 0.88;
         }
-
         else if (autonomy_timer.hasElapsed(3.75)) {
           leftShooterBelt.set(-1);
           rightShooterBelt.set(1);
         }
-
         else if (autonomy_timer.hasElapsed(3.5)) {
           leftShooterWheel.set(-.80);
           rightShooterWheel.set(.80);
           intakeAxles.set(0);  
           secondIntakeAxles.set(0);
         }
-
         else if (autonomy_timer.hasElapsed(3)) {
          shooter_setpoint = 0.880;
          intake_setpoint = 0.477;
- 
         }
-
         else if (autonomy_timer.hasElapsed(2.5)) {
           leftShooterWheel.set(0);
           rightShooterWheel.set(0);
           leftShooterBelt.set(0);
           rightShooterBelt.set(0);
         }
-
         else if (autonomy_timer.hasElapsed(1)) {
           leftShooterBelt.set(-.80);
           rightShooterBelt.set(.80);
           intakeAxles.set(1);
           secondIntakeAxles.set(-1);
         }
-
         else if (autonomy_timer.hasElapsed(.01)) {
           shooter_setpoint = 0.85;
           leftShooterWheel.set(-.95);
           rightShooterWheel.set(.95);
           intake_setpoint = 0.877; //.8995
         }
-
         clampSetpoints();
         controlIntake();
         controlShooter();
@@ -688,25 +639,24 @@ public void teleopPeriodic() {
   
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
+    // This makes sure that the autonomous stops running when teleop starts
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
+    
     homeSetpoints();
-
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
 
-    LimelightSubsystem lime = new LimelightSubsystem();
-    SmartDashboard.putNumber("get X", lime.getX());
+    // this causes a fatal error, but why?
+    while (lime.hasValidTarget()) {
+      drive.drive(0, 0, lime.getX(), lime.hasValidTarget(), lime.hasValidTarget());
+    }
 
+    SmartDashboard.putNumber("get X", lime.getX());
 
     /* Do NOT run unless object detected
      *
