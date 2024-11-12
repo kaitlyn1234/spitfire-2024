@@ -667,27 +667,11 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     LimelightSubsystem lime = new LimelightSubsystem();
 
-    while (lime.hasValidTarget()){
-      m_robotContainer.run();
+    if (stick.getRawButtonPressed(1)) {
+      while (lime.hasValidTarget()) {
+        m_robotContainer.alignToTarget();
+      }
     }
-    // this causes a fatal error, but why?
-   /* while (lime.hasValidTarget()) {
-      drive.drive(0, 0, lime.getX(), lime.hasValidTarget(), lime.hasValidTarget());
-    }
-*/
-    // SmartDashboard.putNumber("get X", lime.getX());
-
-    /* Do NOT run unless object detected
-     *
-     * This is counterintuitive (LOL) but axles would run 
-     * constantly otherwise and thats lowkey inconvenient
-     * 
-     */
-
-    /*  while (limitSwitch.get() == false) {
-          intakeAxles.set(1);
-        }
-    */
 
     blinkin.set(0.57);
 
